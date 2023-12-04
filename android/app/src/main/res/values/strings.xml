@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="client_id">[OKPYplgN3rzvWmETNUC4]</string>
+    <string name="client_secret">[6yz_RFfdSd]</string>
+    <string name="client_name">[project.login]</string>
+    <string name="facebook_app_id">665659959075779</string>
+    <string name="fb_login_protocol_scheme">fb665659959075779</string>
+    <string name="facebook_client_token">24d6ac927afafe8d1b75437ac94dfa1c</string>
+</resources>

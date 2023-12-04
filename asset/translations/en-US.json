@@ -1,0 +1,19 @@
+{
+  "profile change": "profile change",
+  "settings": "Configuration Settings",
+  "Home": "Home",
+  "cancle": "cancle",
+  "save": "save",
+  "pick the profile": "Please select the profile picture you want to change",
+  "camera" : "Camera",
+  "gallery" : "Gallery",
+  "dark mode" : "Dark Mode",
+  "language" : "Language",
+  "korean" : "korean",
+  "english" : "english",
+  "japanese" : "japanese",
+  "vibration" : "vibration",
+  "common" : "common",
+  "account" : "account",
+  "etc" : "etc"
+}

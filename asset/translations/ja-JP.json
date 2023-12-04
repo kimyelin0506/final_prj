@@ -1,0 +1,19 @@
+{
+  "profile change": "プロフィール変更",
+  "settings": "構成設定",
+  "Home": "ホーム",
+  "cancle": "キャンセル",
+  "save": "セーブ",
+  "pick the profile": "変更するプロフィール写真を選んでください。",
+  "camera" : "カメラ",
+  "gallery" : "ギャラリー",
+  "dark mode" : "ダークモード",
+  "language" : "言語",
+  "korean" : "韓国語",
+  "english" : "英語",
+  "japanese" : "日本語",
+  "vibration" : "振動",
+  "common" : "共通",
+  "account" : "アカウント",
+  "etc" : "その他"
+}

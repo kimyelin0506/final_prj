@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "486965428883",
+    "firebase_url": "https://smu-catsns-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "smu-catsns",
+    "storage_bucket": "smu-catsns.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:486965428883:android:af9b513752620a333bc366",
+        "android_client_info": {
+          "package_name": "com.example.final_prj2"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB_llazjIiLg0ZORoePqMWtwNbqRJm_oKI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
