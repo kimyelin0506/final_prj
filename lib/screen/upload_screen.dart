@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:bootpay/model/user.dart';
 import 'package:final_prj/screen/home_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter/services.dart';
@@ -19,9 +20,9 @@ class UploadScreen extends StatefulWidget{
 
 class _UploadState extends State<UploadScreen> {
   int num=0;
-  User? loggedUser; //초기화 시키지 않을 것임
   final textEditingController = TextEditingController();  //텍스트필드를 수정할때마다 값이 업데이트 & 컨트롤러는 해당 listener에게 알림
   String fromWhere='';
+  final _authentication = FirebaseAuth.instance;
 
 
   //위젯이 dispose될때 textEditingController도 dispose 되도록 설정
@@ -139,6 +140,7 @@ class _UploadState extends State<UploadScreen> {
 
 
   }
+
   // 하나의 게시글 해당
   Widget uploadPost() {
     return Column(
@@ -154,7 +156,7 @@ class _UploadState extends State<UploadScreen> {
                   radius: 20,
                 ),
                 SizedBox(width: 10),
-                Text('${loggedUser}',style: TextStyle(fontSize: 25),),  //인스타ID
+                Text('${_authentication.currentUser!.email}',style: TextStyle(fontSize: 25),),  //인스타ID
               ]
           ),
         ),
