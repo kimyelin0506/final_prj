@@ -641,7 +641,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                           );
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('가입 되셨습니다! Login을 해주세요.'),
+                              content: Text('가입 되셨습니다!'),
                               backgroundColor: Colors.red,
                             ),
                           );
@@ -740,8 +740,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                 ),
               ),
               // 소셜 로그인
-              if (_loginPlatform == LoginPlatform.none || _loginStatus == false)
-                AnimatedPositioned(
+              AnimatedPositioned(
                     duration: Duration(milliseconds: 500),
                     curve: Curves.easeIn,
                     top: isSignupScreen
@@ -839,25 +838,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                           ],
                         ),
                       ],
-                    ))
-              else
-                AnimatedPositioned(
-                  duration: Duration(milliseconds: 500),
-                  curve: Curves.easeIn,
-                  top: isSignupScreen
-                      ? MediaQuery.of(context).size.height - 180
-                      : MediaQuery.of(context).size.height - 200,
-                  right: 0,
-                  left: 0,
-                  child: ElevatedButton(
-                    onPressed: signOut,
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all(
-                        const Color(0xff0165E1),
-                      ),
                     ),
-                    child: const Text('로그아웃'),
-                  ),
                 ),
             ],
           ),

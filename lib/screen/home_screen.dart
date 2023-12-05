@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_prj/screen/chat_screen.dart';
 import 'package:final_prj/screen/upload_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -35,7 +36,6 @@ class _HomeScreenState extends State<HomeScreen>{
       final user = _authentication.currentUser;
       if (user != null) {
         loggedUser = user;
-        print(loggedUser!.email);
       }
     } catch (e) {
       print(e);

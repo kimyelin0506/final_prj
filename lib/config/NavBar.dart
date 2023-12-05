@@ -108,7 +108,7 @@ class _NavBarState extends State<NavBar>{
               color: Colors.white,
               image: DecorationImage(
                   fit: BoxFit.fill,
-                  image: AssetImage('asset/img/bg_ocean_suiheisen.jpg')),
+                  image: AssetImage('asset/image/bg_ocean_suiheisen.jpg')),
             ),
           ),
           ListTile(

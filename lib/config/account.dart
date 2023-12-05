@@ -59,7 +59,7 @@ class _AccountState extends State<Account> {
                         child: CircleAvatar(
                           radius: 80,
                           backgroundImage: _imageFile == null
-                              ? AssetImage('asset/img/animal_neko.png')
+                              ? AssetImage('asset/image/animal_neko.png')
                               : FileImage(
                               File(_imageFile!.path)) as ImageProvider<Object>?,
                         ),
