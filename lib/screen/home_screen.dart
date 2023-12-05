@@ -8,8 +8,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:get/get.dart';
 
-import '../card/PostCard.dart';
 import '../config/NavBar.dart';
 import '../config/account.dart';
 import '../config/palette.dart';
@@ -155,11 +155,19 @@ class _HomeScreenState extends State<HomeScreen>{
             opacity: _startApp ? 1.0 : 0.0,
             child: SingleChildScrollView(
               //overflow 방지 -> scroll
-              child: Column(
-                children: [
-                  PostCard(), //1개의 피드를 리턴
-                ],
-              ),
+              child: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: ListView.separated(
+                  itemCount: 2,
+                  itemBuilder: (BuildContext context,int index){
+                    return Get.arguments;
+                  },
+                  separatorBuilder: (BuildContext context,int index){
+                    return SizedBox(height: 5);
+                  },
+                ),
+              )
             ),
           ),
         ],
@@ -176,67 +184,16 @@ class _HomeScreenState extends State<HomeScreen>{
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
             children: <Widget>[
               SimpleDialogOption(
-                child: Text('게시글 올리기'),
-                onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (context)=>UploadScreen()));},
+                child: Text('글 올리기'),
+                onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => UploadScreen())),
+              ),
+              SimpleDialogOption(
+                child: Text('취소'),
+                onPressed: ()=> Navigator.pop(context),
               )
             ],
           );
         }
     );
   }
-
-
-
-  /* 프로필을 누르면 밑에서 사진찍기/갤러리에서 가져오기 를 나타낼 수있는 버튼
-  _showBottomSheet(){
-    return showModalBottomSheet(
-
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(20)
-        )
-      ),
-      builder: (context){
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const SizedBox(height: 10),
-            ElevatedButton(onPressed: () => _getCameraImage(), child: const Text('사진 찍기')),
-            const SizedBox(height:10),
-            ElevatedButton(onPressed: ()=> _getPhotoImage(), child: const Text('이미지에서 가져오기')),
-            const SizedBox(height: 10)
-          ],
-        );
-      }
-    );
-  }
-
-  //사진 찍기 버튼 눌렀을때
-  _getCameraImage() async{
-    final pickedFile = await ImagePicker().pickImage(source: ImageSource.camera);
-    if(pickedFile != null){
-      setState(() {
-        _pickedFile = pickedFile;
-      });
-    }else{
-      if(kDebugMode){
-        print('이미지 선택 안함');
-      }
-    }
-  }
-
-  //이미지에서 선택하기 버튼 눌렀을때
-  _getPhotoImage() async{
-    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
-    if(pickedFile!=null){
-      setState(() {
-        _pickedFile = pickedFile;
-      });
-    }else{
-      if(kDebugMode){
-        print('이미지 선택안함');
-      }
-    }
-  }*/
 }

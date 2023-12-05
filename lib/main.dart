@@ -7,6 +7,8 @@ import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions, Firebase;
 import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:get/get.dart';
+
 void main() async {
   // 플러터에서 사용하는 플러그인을 초기화 할 때 이 플러그인에
   //초기화 메소드가 비동기 방식일 경우 문제 발생
@@ -22,7 +24,7 @@ void main() async {
     javaScriptAppKey: '03bf351027d9ff04c740f35cad592c45',
   );
   runApp(
-    MaterialApp(
+    GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Chatting App',
       theme: ThemeData(

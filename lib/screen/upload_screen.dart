@@ -1,13 +1,15 @@
 import 'dart:io';
 
+import 'package:bootpay/model/user.dart';
+import 'package:final_prj/screen/home_screen.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:image_picker/image_picker.dart';
 
 //사용자가 게시물 올릴때 작성하는 화면
-
-//final storage = FirebaseFirestore.instance; //cloud storage에 access 하는 객체 생성
 
 class UploadScreen extends StatefulWidget{
 
@@ -17,9 +19,10 @@ class UploadScreen extends StatefulWidget{
 
 class _UploadState extends State<UploadScreen> {
   int num=0;
+  User? loggedUser; //초기화 시키지 않을 것임
+  final textEditingController = TextEditingController();  //텍스트필드를 수정할때마다 값이 업데이트 & 컨트롤러는 해당 listener에게 알림
+  String fromWhere='';
 
-  //텍스트필드를 수정할때마다 값이 업데이트 & 컨트롤러는 해당 listener에게 알림
-  final textEditingController = TextEditingController();
 
   //위젯이 dispose될때 textEditingController도 dispose 되도록 설정
   @override
@@ -47,12 +50,13 @@ class _UploadState extends State<UploadScreen> {
           ),
           onPressed: (){
             num++;
-            onSave(context);  //사용자가 쓴 사진과 게시글을 가지고 홈스크린으로 가져가야하는데 아직 구현못했음
+            Get.to(HomeScreen(),arguments: uploadPost());
           },
         ),
       ) ,
       resizeToAvoidBottomInset: false, //타자 칠때 bottom overflow 방지
-      body: Column(
+
+        body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           showImage(),  //사진 보여주기
@@ -65,8 +69,13 @@ class _UploadState extends State<UploadScreen> {
                 backgroundColor: Colors.black,
                 //tooltip: 'pick Iamge',
                 heroTag: 'camera',
-                onPressed: () {
+                onPressed: () async{
+                  fromWhere = 'camera';
                   getImage(ImageSource.camera);
+                  setState(() {
+                    _image = XFile(_image!.path); // 가져온 이미지를 _image에 저장
+                    print(_image!.path);
+                  });
                 },
               ),
 
@@ -76,8 +85,13 @@ class _UploadState extends State<UploadScreen> {
                 backgroundColor: Colors.black,
                 //tooltip: 'pick Iamge',
                 heroTag: 'gallery',
-                onPressed: () {
+                onPressed: () async{
+                  fromWhere = 'gallery';
                   getImage(ImageSource.gallery);
+                  setState(() {
+                    _image = XFile(_image!.path);
+                    print(_image!.path);
+                  });
                 },
               ),
             ],
@@ -87,7 +101,7 @@ class _UploadState extends State<UploadScreen> {
     );
   }
 
-  File? _image;
+  XFile? _image;
   final _picker = ImagePicker();
 
   //이미지를 어디서 가져올지?
@@ -95,7 +109,8 @@ class _UploadState extends State<UploadScreen> {
     final image = await _picker.pickImage(source: imageSource);
 
     setState(() {
-      _image = File(image!.path); // 가져온 이미지를 _image에 저장
+      _image = XFile(image!.path); // 가져온 이미지를 _image에 저장
+      print('가져온 이미지 경로: ${image.path}');
     });
   }
 
@@ -124,19 +139,65 @@ class _UploadState extends State<UploadScreen> {
 
 
   }
-
-  void onSave(BuildContext context) async{
-    //파베이용해서 구현해야함
-
-    /*final feed = UploadModel(
-      text: text!
+  // 하나의 게시글 해당
+  Widget uploadPost() {
+    return Column(
+      children: [
+        Container(
+          padding: EdgeInsets.symmetric(horizontal: 10),
+          height: 80,
+          width: MediaQuery.of(context).size.width,
+          color: Colors.white,
+          child: Row(
+              children: [
+                CircleAvatar(  //프로필
+                  radius: 20,
+                ),
+                SizedBox(width: 10),
+                Text('${loggedUser}',style: TextStyle(fontSize: 25),),  //인스타ID
+              ]
+          ),
+        ),
+        //게시글 보이는 곳
+        Container(
+            width: MediaQuery.of(context).size.width,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.width,
+                  color: Colors.grey,
+                  child: Image.file(File(_image!.path)), //사진 보여줄 곳
+                ),
+                Container(
+                  color: Colors.black54,
+                  width: MediaQuery.of(context).size.width,
+                  height: 20,
+                  child: Text(textEditingController.text), //쓴 글 보여주기
+                )
+              ],
+            )
+        ),
+        Container(
+          height: 45,
+          width: MediaQuery.of(context).size.width,
+          child: Row(
+            children: [
+              Icon(Icons.favorite_border,),
+              SizedBox(width:7),
+              Icon(Icons.chat_outlined),
+              SizedBox(width:7),
+            ],
+          ),
+        ), //좋아요
+        Container(
+            height: 50,
+            width: MediaQuery.of(context).size.width,
+            color: Colors.black26,
+            child: TextField(style: TextStyle(fontSize: 18,fontWeight: FontWeight.normal),)
+        ),
+      ],
     );
-
-    await FirebaseFirestore.instance
-        .collection('Feed')
-        .doc(feed.text)
-        .set(feed.toJson());
-    */
-    Navigator.pop(context);
   }
 }
