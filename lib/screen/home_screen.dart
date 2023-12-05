@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_prj/screen/chat_screen.dart';
+import 'package:final_prj/screen/payment_screen.dart';
 import 'package:final_prj/screen/upload_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
@@ -110,6 +111,19 @@ class _HomeScreenState extends State<HomeScreen>{
         title: Text('안서s Cat!'),
         centerTitle: true,
         actions: [
+          IconButton( //고양이 후원 아이콘
+            icon: Icon(Icons.monetization_on),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return FirstRoute(); //요건 payment_screen.dart에 위치함
+                  },
+                ),
+              );
+            },
+          ),
           IconButton(
             icon: Icon(Icons.add_a_photo),
             onPressed: () {
