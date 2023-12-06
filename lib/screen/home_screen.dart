@@ -31,15 +31,7 @@ class _HomeScreenState extends State<HomeScreen>{
   late Timer _timer;
   int _seconds=0;
   File? img;
-  String _userName='';
-
-  Future<String> getUserName() async {
-    final _userData = await FirebaseFirestore.instance
-        .collection('user')
-        .doc(FirebaseAuth.instance.currentUser!.uid)
-        .get();
-      return _userName = _userData.data()!['userName'].toString();
-  }
+  final String _userEmail=FirebaseAuth.instance.currentUser!.email.toString();
 
   void getCurrentUser() async {
     try {
@@ -56,10 +48,9 @@ class _HomeScreenState extends State<HomeScreen>{
   void iniState() {
     super.initState();
     getCurrentUser();
-    getUserName();
   }
 
-  void welcomeMention(){
+  void welcomeMention() {
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       setState(() {
         _seconds ++;
@@ -78,41 +69,58 @@ class _HomeScreenState extends State<HomeScreen>{
       opacity: _startApp ? 0.0 : 1.0,
       child: Stack(
         children: [
-          Container(
-            color: Palette.backgroundColor,
-            child: Center(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  RichText(text: TextSpan(
-                      children: [
-                        TextSpan(
-                            text: '${_userName}',
-                            style: TextStyle(
-                              color: Colors.deepPurple,
-                              fontSize: 25.0,
-                            )
-                        ),
-                        TextSpan(
-                          text: '님 환영합니다',
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 20.0,
-                          ),
-                        ),
-                      ]
-                  ),),
-                ],
-              ),
-            ),
-          ),
+          StreamBuilder(
+              stream: FirebaseFirestore.instance.collection('user').snapshots(),
+              builder: (context,
+                  AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
+                if (snapshot.hasData) {
+                  final _userDocs = snapshot.data!.docs;
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Container();
+                  }
+                  return ListView.builder(
+                      itemCount: _userDocs.length,
+                      itemBuilder: (context, index) {
+                        if (_userDocs[index]['email'] == _userEmail)
+                          return Container(
+                            height: MediaQuery.of(context).size.height,
+                            width: MediaQuery.of(context).size.width,
+                            color: Palette.backgroundColor,
+                            child: Center(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    '${_userDocs[index]['userName']} 님 ',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20.0,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                  Text(
+                                    '환영합니다',
+                                    style: TextStyle(
+                                      color: Colors.black45,
+                                      fontSize: 20.0,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        return Container();
+                      });
+                }
+                return Container();
+              }),
         ],
       ),
     );
   }
 
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     welcomeMention();
     return Scaffold(
       drawer: NavBar(),
@@ -121,7 +129,8 @@ class _HomeScreenState extends State<HomeScreen>{
         title: Text('안서s Cat!'),
         centerTitle: true,
         actions: [
-          IconButton( //고양이 후원 아이콘
+          IconButton(
+            //고양이 후원 아이콘
             icon: Icon(Icons.monetization_on),
             onPressed: () {
               Navigator.push(
@@ -164,21 +173,20 @@ class _HomeScreenState extends State<HomeScreen>{
             duration: Duration(seconds: 5),
             opacity: _startApp ? 1.0 : 0.0,
             child: SingleChildScrollView(
-              //overflow 방지 -> scroll
-              child: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: ListView.separated(
-                  itemCount: 2,
-                  itemBuilder: (BuildContext context,int index){
-                    return Get.arguments;
-                  },
-                  separatorBuilder: (BuildContext context,int index){
-                    return SizedBox(height: 5);
-                  },
-                ),
-              )
-            ),
+                //overflow 방지 -> scroll
+                child: Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              child: ListView.separated(
+                itemCount: 2,
+                itemBuilder: (BuildContext context, int index) {
+                  return Get.arguments;
+                },
+                separatorBuilder: (BuildContext context, int index) {
+                  return SizedBox(height: 5);
+                },
+              ),
+            )),
           ),
         ],
       ),
@@ -189,9 +197,10 @@ class _HomeScreenState extends State<HomeScreen>{
   takeImage(BuildContext context) {
     return showDialog(
         context: context,
-        builder: (context){
+        builder: (context) {
           return SimpleDialog(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8.0)),
             children: <Widget>[
               SimpleDialogOption(
                 child: Text('글 올리기'),
