@@ -156,7 +156,7 @@ class _SecondRouteState extends State<SecondRoute> {
                         ),
                       ),
                       child: Text(
-                        '페이결제',
+                        '웹결제',
                         style: TextStyle(
                           fontSize: 24.0, // 글씨 크기 키우기
                           fontWeight: FontWeight.bold,
