@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:final_prj/screen/chat_list_screen.dart';
 import 'package:final_prj/screen/chat_screen.dart';
 import 'package:final_prj/screen/upload_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -24,16 +25,24 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen>{
-  final _authentication = FirebaseAuth.instance;
   User? loggedUser; //초기화 시키지 않을 것임
   bool _startApp = false;
   late Timer _timer;
   int _seconds=0;
   File? img;
+  String _userName='';
 
-  void getCurrentUser() {
+  Future<String> getUserName() async {
+    final _userData = await FirebaseFirestore.instance
+        .collection('user')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .get();
+      return _userName = _userData.data()!['userName'].toString();
+  }
+
+  void getCurrentUser() async {
     try {
-      final user = _authentication.currentUser;
+      final user = FirebaseAuth.instance.currentUser;
       if (user != null) {
         loggedUser = user;
       }
@@ -46,6 +55,7 @@ class _HomeScreenState extends State<HomeScreen>{
   void iniState() {
     super.initState();
     getCurrentUser();
+    getUserName();
   }
 
   void welcomeMention(){
@@ -76,7 +86,7 @@ class _HomeScreenState extends State<HomeScreen>{
                   RichText(text: TextSpan(
                       children: [
                         TextSpan(
-                            text: '${loggedUser?.email}',
+                            text: '${_userName}',
                             style: TextStyle(
                               color: Colors.deepPurple,
                               fontSize: 25.0,
@@ -124,7 +134,7 @@ class _HomeScreenState extends State<HomeScreen>{
                 //화면 전환
                 MaterialPageRoute(
                   builder: (context) {
-                    return ChatScreen();
+                    return ChatListScreen();
                   },
                 ),
               );

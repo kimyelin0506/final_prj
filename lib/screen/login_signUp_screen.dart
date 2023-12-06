@@ -1,3 +1,4 @@
+import 'package:final_prj/add_image/add_image.dart';
 import 'package:final_prj/screen/chat_screen.dart';
 import 'package:final_prj/screen/home_screen.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
@@ -38,11 +39,23 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
 
   bool showSpinner = false;
 
+  void showAlert(BuildContext context) {
+    //호출되면 위젯트리에 삽입되어야 하므로 인자ㄱ밧이 context
+    showDialog(
+        context: context,
+        builder: (context) {
+          return Dialog(
+            backgroundColor: Colors.white,
+            child: AddImage()
+          );
+        });
+  }
+
   //form이 유효한지 확인 -> 유효하면 null값 전달됨
   void _tryValidation() {
     //모든 텍스트필드에 있는 validate를 실행 시킬 수 있음
     final isValid = _formKey.currentState!.validate();
-    if(isValid){
+    if (isValid) {
       _formKey.currentState!.save();
     }
   }
@@ -321,19 +334,34 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                               },
                               child: Column(
                                 children: [
-                                  Text(
-                                    'Sign up',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: isSignupScreen
-                                          ? Palette.activeColor
-                                          : Palette.textColor1,
-                                    ),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        'Sign up',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                          color: isSignupScreen
+                                              ? Palette.activeColor
+                                              : Palette.textColor1,
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 15,
+                                      ),
+                                      GestureDetector(
+                                        onTap: (){
+                                          showAlert(context);
+                                        },
+                                        child: Icon(Icons.image,
+                                        color: isSignupScreen ? Colors.cyan : Colors.grey[300],
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                   if (isSignupScreen)
                                     Container(
-                                      margin: EdgeInsets.only(top: 3),
+                                      margin: EdgeInsets.fromLTRB(0,3,35,0),
                                       height: 2,
                                       width: 55,
                                       color: Colors.orange,
@@ -641,7 +669,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                           );
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('가입 되셨습니다!'),
+                              content: Text('가입 되셨습니다! 로그인을 진행해 주세요.'),
                               backgroundColor: Colors.red,
                             ),
                           );

@@ -6,10 +6,12 @@ import '../chatting/chat/message.dart';
 import '../chatting/chat/new_massage.dart';
 
 class ChatScreen extends StatefulWidget{
-  const ChatScreen({Key? key}): super(key: key);
+  final String sendUser;
+  final String receiveUser;
+  const ChatScreen({required this.sendUser, required this.receiveUser, Key? key}): super(key: key);
 
   @override
-  State<ChatScreen> createState() => _ChatScreenState();
+  State<ChatScreen> createState() => _ChatScreenState(sendUser: sendUser, receiveUser: receiveUser);
 }
 //stream은 지속적으로 받는 데이터를 처리할 때 필요
 // 데이터     | 즉시 사용가능 데이터 || 기다려야 사용가능 데이터
@@ -20,6 +22,10 @@ class ChatScreen extends StatefulWidget{
 class _ChatScreenState extends State<ChatScreen>{
   final _authentication = FirebaseAuth.instance;
   User? loggedUser; //초기화 시키지 않을 것임
+  String sendUser;
+  String receiveUser;
+
+  _ChatScreenState({required this.sendUser, required this.receiveUser});
 
   // 채팅방으로 이동할 때마다 실행할것임
   void getCurrentUser() {
@@ -43,19 +49,24 @@ class _ChatScreenState extends State<ChatScreen>{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        title: Text('안서s Cat!'),
+        centerTitle: true,
+      ),
       body: Stack(
         children: [
           Container(
-            child: Column(
-              children: [
-                //listView가 화면내의 모든 공간을 차지 하기 대문에 expanded 사용
-                Expanded(
-                    child: Massages(),
-                ),
-                NewMassages(),
-              ],
+              child: Column(
+                children: [
+                  //listView가 화면내의 모든 공간을 차지 하기 대문에 expanded 사용
+                  Expanded(
+                        child: Massages(sendUser: sendUser,receiveUser: receiveUser,),
+                    ),
+                  NewMassages(sendUser: sendUser,receiveUser: receiveUser,),
+                ],
+              ),
             ),
-          )
         ],
       ),
     );
