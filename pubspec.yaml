@@ -58,6 +58,10 @@ dependencies:
   easy_localization: ^3.0.0
   flutter_chat_bubble: ^2.0.2
 
+  #모금
+  bootpay: ^4.8.0
+  get: ^4.6.6
+
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
 
