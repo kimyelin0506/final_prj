@@ -55,10 +55,7 @@ class _UploadState extends State<UploadScreen> {
             postImage();
             num++;
             Get.to(HomeScreen(),arguments: uploadPost());
-            setState((){
-              //save();
-            });
-          },
+            },
         ),
       ) ,
       resizeToAvoidBottomInset: false, //타자 칠때 bottom overflow 방지
@@ -132,6 +129,7 @@ class _UploadState extends State<UploadScreen> {
     }
   }
 
+
   //이미지를 어디서 가져올지?
   Future getImage(ImageSource imageSource) async {
    final ImagePicker imagePicker = ImagePicker();
@@ -181,6 +179,9 @@ class _UploadState extends State<UploadScreen> {
   Widget uploadPost() {
     return Column(
       children: [
+        _isLoading
+            ? const LinearProgressIndicator()
+            : const Padding(padding: EdgeInsets.only(top: 0)),
         Container(
           padding: EdgeInsets.symmetric(horizontal: 10),
           height: 80,
@@ -219,7 +220,7 @@ class _UploadState extends State<UploadScreen> {
                 const Divider(),
                 SizedBox(
                   width: MediaQuery.of(context).size.width *0.35,
-                  child: Text(textEditingController.text),
+                  child: Text(textEditingController.text,style: TextStyle(fontStyle: FontStyle.italic ),),
                 ),
               ],
             )

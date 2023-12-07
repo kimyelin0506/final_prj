@@ -17,6 +17,7 @@ class ImageStoreMethods{
   final FirebaseStorage _storage = FirebaseStorage.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  //storage에 업로드
   Future<String> imageToStorage(Uint8List file) async{
     String id = const Uuid().v1();  //post의 id
     Reference ref = _storage.ref().child('testImg').child(id);
@@ -27,6 +28,7 @@ class ImageStoreMethods{
     return downloadUrl;
   }
 
+  //firestore에 업로드
   Future<String> uploadPost(String description, Uint8List file) async{
     String res = 'some Error occured';
     try{
