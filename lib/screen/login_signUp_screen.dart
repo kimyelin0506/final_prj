@@ -678,6 +678,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                               .doc(newUser.user!.uid).set({
                             'userName' : userName,
                             'email' : userEmail,
+                            'userUid' : newUser.user!.uid
                           });
                           setState(() {
                             showSpinner = false; //spinner end
