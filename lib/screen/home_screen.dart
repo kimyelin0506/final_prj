@@ -147,7 +147,7 @@ class _HomeScreenState extends State<HomeScreen>{
             icon: Icon(Icons.add_a_photo),
             onPressed: () {
               takeImage(context);
-            }, //왼쪽 위 사진추가icon 누르면 사진을 가져오게끔 설정
+            },
           ),
           IconButton(
             icon: Icon(Icons.chat),

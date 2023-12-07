@@ -8,6 +8,7 @@ import 'package:firebase_core/firebase_core.dart' show FirebaseOptions, Firebase
 import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
+import 'package:final_prj/resources/add_data.dart';
 
 void main() async {
   // 플러터에서 사용하는 플러그인을 초기화 할 때 이 플러그인에

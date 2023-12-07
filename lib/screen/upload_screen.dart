@@ -4,11 +4,13 @@ import 'package:bootpay/model/user.dart';
 import 'package:final_prj/screen/home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:final_prj/resources/add_data.dart';
 
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:image_picker/image_picker.dart';
+
 
 //사용자가 게시물 올릴때 작성하는 화면
 
@@ -19,6 +21,9 @@ class UploadScreen extends StatefulWidget{
 }
 
 class _UploadState extends State<UploadScreen> {
+  Uint8List? _file;
+  bool _isLoading = false;
+
   int num=0;
   final textEditingController = TextEditingController();  //텍스트필드를 수정할때마다 값이 업데이트 & 컨트롤러는 해당 listener에게 알림
   String fromWhere='';
@@ -45,13 +50,14 @@ class _UploadState extends State<UploadScreen> {
         centerTitle: true,
         backgroundColor: Colors.grey,
         leading: IconButton(
-          icon: Icon(
-            Icons.add_box_outlined,
-            size: 30.0,
-          ),
+          icon: Icon(Icons.add_box_outlined, size: 30.0),
           onPressed: (){
+            postImage();
             num++;
             Get.to(HomeScreen(),arguments: uploadPost());
+            setState((){
+              //save();
+            });
           },
         ),
       ) ,
@@ -72,10 +78,9 @@ class _UploadState extends State<UploadScreen> {
                 heroTag: 'camera',
                 onPressed: () async{
                   fromWhere = 'camera';
-                  getImage(ImageSource.camera);
+                  Uint8List file = await getImage(ImageSource.camera);
                   setState(() {
-                    _image = XFile(_image!.path); // 가져온 이미지를 _image에 저장
-                    print(_image!.path);
+                    _file = file;
                   });
                 },
               ),
@@ -88,10 +93,9 @@ class _UploadState extends State<UploadScreen> {
                 heroTag: 'gallery',
                 onPressed: () async{
                   fromWhere = 'gallery';
-                  getImage(ImageSource.gallery);
+                  Uint8List file = await getImage(ImageSource.gallery);
                   setState(() {
-                    _image = XFile(_image!.path);
-                    print(_image!.path);
+                   _file =file;
                   });
                 },
               ),
@@ -102,17 +106,40 @@ class _UploadState extends State<UploadScreen> {
     );
   }
 
-  XFile? _image;
-  final _picker = ImagePicker();
+  showSnackBar(String content,BuildContext context){
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(content)));
+  }
+
+  //upload 되었나?
+  void postImage() async{
+    setState(() {
+      _isLoading = true;
+    });
+    try{
+      String res = await ImageStoreMethods().uploadPost(textEditingController.text, _file!);
+      if(res == 'success'){
+        setState(() {
+          _isLoading = false;
+        });
+        showSnackBar('posted', context);
+      }else{
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }catch(e){
+      showSnackBar(e.toString(), context);
+    }
+  }
 
   //이미지를 어디서 가져올지?
   Future getImage(ImageSource imageSource) async {
-    final image = await _picker.pickImage(source: imageSource);
-
-    setState(() {
-      _image = XFile(image!.path); // 가져온 이미지를 _image에 저장
-      print('가져온 이미지 경로: ${image.path}');
-    });
+   final ImagePicker imagePicker = ImagePicker();
+   XFile? file = await imagePicker.pickImage(source: imageSource);
+   if(file != null){
+     return await file.readAsBytes();
+   }
+   print('no image selected');
   }
 
   //이미지&게시글 보여주기
@@ -125,7 +152,16 @@ class _UploadState extends State<UploadScreen> {
             width: MediaQuery.of(context).size.width,
             height: MediaQuery.of(context).size.width,
             child: Center(
-              child: _image == null? Text('No image') : Image.file(File(_image!.path)),
+              child: _file == null?
+                Text('No image') :
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white24,
+                  image: DecorationImage(
+                  image: MemoryImage(_file!),
+                  fit: BoxFit.fill,
+                  alignment: FractionalOffset.topCenter,
+              )) ,),
             ),
           ),
           TextField(
@@ -166,18 +202,25 @@ class _UploadState extends State<UploadScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.width,
-                  color: Colors.grey,
-                  child: Image.file(File(_image!.path)), //사진 보여줄 곳
+                const Divider(),
+                SizedBox(
+                  height: 300,
+                  width: 300,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: MemoryImage(_file!),
+                        fit: BoxFit.fill,
+                        alignment: FractionalOffset.center,
+                      )
+                    ),
+                  ),
                 ),
-                Container(
-                  color: Colors.black54,
-                  width: MediaQuery.of(context).size.width,
-                  height: 20,
-                  child: Text(textEditingController.text), //쓴 글 보여주기
-                )
+                const Divider(),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width *0.35,
+                  child: Text(textEditingController.text),
+                ),
               ],
             )
         ),
