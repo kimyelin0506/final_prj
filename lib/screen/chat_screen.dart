@@ -34,8 +34,8 @@ class ChatScreen extends StatefulWidget {
 //매순간 데이터가 들어왔는지 확인하는데 유용함 -> streambuilder 사용
 
 class _ChatScreenState extends State<ChatScreen> {
-  final _authentication = FirebaseAuth.instance;
-  User? loggedUser; //초기화 시키지 않을 것임
+ // final _authentication = FirebaseAuth.instance;
+ // User? loggedUser; //초기화 시키지 않을 것임
   String sendUserUid;
   String rcvUserEmail;
   String rcvUserUid;
@@ -49,6 +49,7 @@ class _ChatScreenState extends State<ChatScreen> {
       required this.titleUser});
 
   // 채팅방으로 이동할 때마다 실행할것임
+  /*
   void getCurrentUser() async {
     try {
       final user = _authentication.currentUser;
@@ -65,7 +66,7 @@ class _ChatScreenState extends State<ChatScreen> {
     super.initState();
     getCurrentUser();
   }
-
+*/
   @override
   Widget build(BuildContext context) {
     return Scaffold(

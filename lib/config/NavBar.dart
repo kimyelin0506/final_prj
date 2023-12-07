@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_prj/config/setting.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -12,27 +13,14 @@ class NavBar extends StatefulWidget {
   State<NavBar> createState() => _NavBarState();
 }
 class _NavBarState extends State<NavBar>{
-  final _authentication = FirebaseAuth.instance;
-  User? loggedUser; //초기화 시키지 않을 것임
-
-  void getCurrentUser() {
-    try {
-      final user = _authentication.currentUser;
-      if (user != null) {
-        loggedUser = user;
-        print(loggedUser!.email);
-      }
-    } catch (e) {
-      print(e);
-    }
+  String userName='';
+  void _getUserName() async{
+    final userDt = await FirebaseFirestore.instance.collection('user').doc(
+        FirebaseAuth.instance.currentUser!.uid).get();
+    setState(() {
+      userName = userDt.data()!['userName'].toString();
+    });
   }
-
-  @override
-  void iniState() {
-    super.initState();
-    getCurrentUser();
-  }
-
   void showLogOutCheckDialog(){
     showDialog(
         context: context,
@@ -45,7 +33,7 @@ class _NavBarState extends State<NavBar>{
             shadowColor: Colors.black,
             title: Column(
               children: <Widget>[
-                new Text('${loggedUser?.email}님 로그아웃 하시겠습니까?'),
+                new Text('${userName}님 로그아웃 하시겠습니까?'),
               ],
             ),
             content: Column(
@@ -72,7 +60,7 @@ class _NavBarState extends State<NavBar>{
                   shadowColor: Colors.black12,
                 ),
                 onPressed: () {
-                  _authentication.signOut();
+                  FirebaseAuth.instance.signOut();
                   Navigator.push(
                     context,
                     //화면 전환
@@ -100,7 +88,7 @@ class _NavBarState extends State<NavBar>{
             accountEmail: Text('meowmeow@gmail.com'),
             currentAccountPicture: CircleAvatar(
               child: ClipOval(
-                child: Image.asset('asset/img/animal_neko.png',
+                child: Image.asset('asset/image/animal_neko.png',
                     width: 80, height: 80),
               ),
             ),

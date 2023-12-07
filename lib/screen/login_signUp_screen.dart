@@ -1,5 +1,4 @@
 import 'package:final_prj/add_image/add_image.dart';
-import 'package:final_prj/screen/chat_screen.dart';
 import 'package:final_prj/screen/home_screen.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
@@ -14,7 +13,7 @@ import 'package:flutter_naver_login/flutter_naver_login.dart';
 import '../../config/login_platform.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; //userID는 엑스트라데이터이므로
-
+import 'package:firebase_storage/firebase_storage.dart';
 
 // class 안에서 변화되는 인스턴스를 적용하기 위해 statefulwidget 사용
 class LoginSignupScreen extends StatefulWidget {
@@ -39,6 +38,11 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
 
   bool showSpinner = false;
 
+  File? userPickedImage;
+  void pickedImage(File image){
+    userPickedImage = image;
+  }
+
   void showAlert(BuildContext context) {
     //호출되면 위젯트리에 삽입되어야 하므로 인자ㄱ밧이 context
     showDialog(
@@ -46,7 +50,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
         builder: (context) {
           return Dialog(
             backgroundColor: Colors.white,
-            child: AddImage()
+            child: AddImage(addImageFunc: pickedImage,)
           );
         });
   }
@@ -349,6 +353,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                                       SizedBox(
                                         width: 15,
                                       ),
+                                      if(isSignupScreen)
                                       GestureDetector(
                                         onTap: (){
                                           showAlert(context);
@@ -660,6 +665,14 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                         showSpinner = true; //spinner end
                       });
                       if(isSignupScreen){
+                        //이미지 등록 메세지
+                        setState(() {
+                          showSpinner = false;
+                          SnackBar(
+                            content: Text('이미지 선택해주세요'),
+                            backgroundColor: Colors.blue,
+                          );
+                        });
                         _tryValidation();
                         // try catch를 사용하여 오류가 났을 경우 앱이 다운되거나 멈추는 것을 방지하고 사용자에게 이유를 설명함
                         try{
@@ -667,6 +680,12 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                             email: userEmail,
                             password: userPassWord,
                           );
+                          //이미지 저장 경로 접근
+                          final refImage = FirebaseStorage.instance.ref()
+                              .child('picked_image')
+                              .child(newUser.user!.uid+'.png');
+                          await refImage.putFile(userPickedImage!);
+
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text('가입 되셨습니다! 로그인을 진행해 주세요.'),
@@ -685,12 +704,16 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                           });
                         }catch(e){
                           print(e);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('가입 입력 양식을 확인해주세요'),
-                              backgroundColor: Colors.red,
-                            ),
-                          );
+                          if(mounted) {
+                            //async 방식으로 사용자 입력을 처리하는데 바뀌는 위젯트리로 인해 다른 context를 사용하여
+                            //호출이되는 문제를 해결하기 위해 mounted사용하면 위젯이 사라지는 순간 조건이 false가됨
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('가입 입력 양식을 확인해주세요'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
                           setState(() {
                             showSpinner = false; //spinner end
                           });

@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chat_bubble/chat_bubble.dart';
 
 class ChatBubbles extends StatefulWidget {
-  final String rcvUserName;
-  final String message;
-  final String sendUserName;
-  final bool isMe; // 내가 보냈을 때를 구별
-  final DateTime time;
+  String rcvUserName;
+  String message;
+  String sendUserName;
+  bool isMe; // 내가 보냈을 때를 구별
+  DateTime time;
 
-  const ChatBubbles(
+  ChatBubbles(
       {required this.rcvUserName,
       required this.message,
       required this.sendUserName,
@@ -28,15 +28,12 @@ class ChatBubbles extends StatefulWidget {
 }
 
 class _ChatBubblesState extends State<ChatBubbles> {
-  final String rcvUserName;
-  final String message;
-  final String sendUserName;
-  final bool isMe; // 내가 보냈을 때를 구별
-  final DateTime time;
+  String rcvUserName;
+  String message;
+  String sendUserName;
+  bool isMe; // 내가 보냈을 때를 구별
+  DateTime time;
   bool likeMessage = false;
-  var ex;
-  final GlobalKey _containerSize = GlobalKey();
-  Size? size;
 
   _ChatBubblesState({
     required this.message,
@@ -45,26 +42,6 @@ class _ChatBubblesState extends State<ChatBubbles> {
     required this.rcvUserName,
     required this.time,
   });
-
-  Size? _getSize() {
-    if (_containerSize.currentContext != null) {
-      final RenderBox renderBox =
-          _containerSize.currentContext!.findRenderObject() as RenderBox;
-      Size returnSize = renderBox.size;
-      return returnSize;
-    }
-  }
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
-      setState(() {
-        size = _getSize();
-      });
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +53,7 @@ class _ChatBubblesState extends State<ChatBubbles> {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(0, 0, 5, 0),
+                padding: const EdgeInsets.fromLTRB(0, 26, 0, 0),
                 child: ChatBubble(
                   clipper: ChatBubbleClipper1(type: BubbleType.sendBubble),
                   alignment: Alignment.topRight,
@@ -127,6 +104,20 @@ class _ChatBubblesState extends State<ChatBubbles> {
               ),
             ],
           ),
+        if (isMe)
+          Positioned(
+            top: 0,
+            right: isMe ? 5 : null,
+            left: isMe ? null : 5,
+            child: CircleAvatar(),
+          ),
+        if (!isMe)
+          Positioned(
+            top: 0,
+            right: isMe ? 5 : null,
+            left: isMe ? null : 5,
+            child: CircleAvatar(),
+          ),
         if (!isMe)
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -134,14 +125,13 @@ class _ChatBubblesState extends State<ChatBubbles> {
               Row(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(5, 0, 0, 0),
+                    padding: const EdgeInsets.fromLTRB(3, 30, 0, 0),
                     child: ChatBubble(
                       clipper:
                           ChatBubbleClipper8(type: BubbleType.receiverBubble),
                       backGroundColor: Color(0xffE7E7ED),
                       margin: EdgeInsets.only(top: 20),
                       child: Container(
-                        key: _containerSize,
                         constraints: BoxConstraints(
                           maxWidth: MediaQuery.of(context).size.width * 0.7,
                         ),
@@ -151,7 +141,7 @@ class _ChatBubblesState extends State<ChatBubbles> {
                               : CrossAxisAlignment.start,
                           children: [
                             Text(
-                              sendUserName,
+                              rcvUserName,
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.black,
@@ -169,11 +159,12 @@ class _ChatBubblesState extends State<ChatBubbles> {
                   GestureDetector(
                     onDoubleTap: () {
                       setState(() {
+                        likeMessage =true;
                         Map<String, bool> map = {
-                          'likeMessage' : true,
+                          'likeMessage': true,
                         };
-                       // FirebaseFirestore.instance.collection('chat').doc().update(map);
-                       // ex = FirebaseFirestore.instance.collection('chat').doc('likeMessage').get().then((value) => value);
+                        // FirebaseFirestore.instance.collection('chat').doc().update(map);
+                        // ex = FirebaseFirestore.instance.collection('chat').doc('likeMessage').get().then((value) => value);
                       });
                       //print(ex);
                     },

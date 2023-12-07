@@ -4,29 +4,26 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class ChatListScreen extends StatefulWidget {
-  const ChatListScreen({super.key});
+  final user;
+  const ChatListScreen({required this.user, super.key});
 
   @override
-  State<ChatListScreen> createState() => _ChatListScreenState();
+  State<ChatListScreen> createState() => _ChatListScreenState(user: user);
 }
 
 class _ChatListScreenState extends State<ChatListScreen> {
+  var user;
   String sendUserUid = '';
   String rcvUserEmail = '';
   String rcvUserUid = '';
   String titleUser='';
 
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
+  _ChatListScreenState({required this.user});
 
-  }
 
 
   @override
   Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser;
     bool _isSingleChat = true;
     return Scaffold(
       appBar: AppBar(
@@ -68,6 +65,8 @@ class _ChatListScreenState extends State<ChatListScreen> {
                                     userDoc[index]['userUid'].toString();
                                 titleUser =
                                     userDoc[index]['userName'].toString();
+                                print(sendUserUid);
+                                print(rcvUserUid);
                               });
                               Navigator.push(context,
                                   MaterialPageRoute(builder: (context) {

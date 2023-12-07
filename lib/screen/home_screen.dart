@@ -31,7 +31,7 @@ class _HomeScreenState extends State<HomeScreen>{
   late Timer _timer;
   int _seconds=0;
   File? img;
-  final String _userEmail=FirebaseAuth.instance.currentUser!.email.toString();
+  final String _userEmail = FirebaseAuth.instance.currentUser!.email.toString();
 
   void getCurrentUser() async {
     try {
@@ -157,7 +157,7 @@ class _HomeScreenState extends State<HomeScreen>{
                 //화면 전환
                 MaterialPageRoute(
                   builder: (context) {
-                    return ChatListScreen();
+                    return ChatListScreen(user: FirebaseAuth.instance.currentUser,);
                   },
                 ),
               );
