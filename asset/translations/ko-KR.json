@@ -8,6 +8,9 @@
   "camera" : "카메라",
   "gallery" : "갤러리",
   "dark mode" : "다크모드",
+  "name" : "이름",
+  "email" : "이메일",
+  "facat" : "최애 고양이",
   "language" : "언어",
   "korean" : "한국어",
   "english" : "영어",
@@ -15,5 +18,14 @@
   "vibration" : "진동",
   "common" : "공통",
   "account" : "계정",
-  "etc" : "기타"
+  "etc" : "기타",
+  "logout" : "로그아웃하기",
+  "SelectLanguage" : "언어를 선택하세요",
+  "nowlanguage" : "한국어",
+  "test" : "테스트",
+  "nowlanguage" : "한국어",
+  "test" : "테스트",
+  "dologout" : "님 로그아웃 하시겠습니까?",
+  "movelogin" : "로그인 화면으로 이동합니다 ",
+  "notlogout" : "고양이 더 구경하기"
 }

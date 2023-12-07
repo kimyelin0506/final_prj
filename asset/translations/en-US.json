@@ -4,10 +4,13 @@
   "Home": "Home",
   "cancle": "cancle",
   "save": "save",
-  "pick the profile": "Please select the profile picture you want to change",
+  "pick the profile": "Please select the picture want to change",
   "camera" : "Camera",
   "gallery" : "Gallery",
   "dark mode" : "Dark Mode",
+  "name" : "name",
+  "email" : "email",
+  "facat" : "favorite cat",
   "language" : "Language",
   "korean" : "korean",
   "english" : "english",
@@ -15,5 +18,12 @@
   "vibration" : "vibration",
   "common" : "common",
   "account" : "account",
-  "etc" : "etc"
+  "etc" : "etc",
+  "logout" : "logout",
+  "SelectLanguage" : "Select Language",
+  "nowlanguage" : "english",
+  "test" : "test",
+  "dologout" : "Do you want to log out?",
+  "movelogin" : "Go to Login ",
+  "notlogout" : "Watching More Cats"
 }
