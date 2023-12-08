@@ -1,9 +1,19 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_prj/config/setting.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:final_prj/config/account.dart';
 import '../screen/home_screen.dart';
 import '../screen/login_signUp_screen.dart';
+import 'dart:developer';
+import 'package:final_prj/model/usermodel.dart';
+
+enum MenuType {
+  english,
+  korean,
+  japanese,
+}
 
 class NavBar extends StatefulWidget {
   const NavBar({Key? key}):super(key: key);
@@ -11,24 +21,83 @@ class NavBar extends StatefulWidget {
   @override
   State<NavBar> createState() => _NavBarState();
 }
+
+
+
 class _NavBarState extends State<NavBar>{
+
+
+
+  void _showLanguageDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Select Language').tr(),
+          content: Column(
+            children: [
+              _buildLanguageOption(MenuType.english, tr('english')),
+              _buildLanguageOption(MenuType.korean, tr('korean')),
+              _buildLanguageOption(MenuType.japanese, tr('japanese')),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  // AlertDialog에서 선택한 언어로 변경
+  void _changeLanguage(MenuType type) {
+    switch (type) {
+      case MenuType.english:
+        context.setLocale(Locale('en', 'US'));
+        break;
+      case MenuType.korean:
+        context.setLocale(Locale('ko', 'KR'));
+        break;
+      case MenuType.japanese:
+        context.setLocale(Locale('ja', 'JP'));
+        break;
+    }
+    Navigator.pop(context); // AlertDialog 닫기
+  }
+
+  // 언어 옵션 위젯
+  Widget _buildLanguageOption(MenuType type, String label) {
+    return InkWell(
+      onTap: () {
+        _changeLanguage(type);
+      },
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Text(label),
+      ),
+    );
+  }
+
   final _authentication = FirebaseAuth.instance;
   User? loggedUser; //초기화 시키지 않을 것임
+  UserModel? currentUser;
+  late String currentUserUid;
+  final firestore = FirebaseFirestore.instance;
 
-  void getCurrentUser() {
-    try {
-      final user = _authentication.currentUser;
-      if (user != null) {
-        loggedUser = user;
-        print(loggedUser!.email);
-      }
-    } catch (e) {
-      print(e);
-    }
+
+  Future<void> getCurrentUser() async {
+    var user = FirebaseAuth.instance.currentUser;
+    currentUserUid = user!.uid;
+
+    // Firestore에서 사용자 정보 가져오기
+    var userData = await firestore.collection('user').doc(currentUserUid).get();
+    setState(() {
+      currentUser = UserModel.fromMap(userData.data()!);
+    });
+    log('debug 유저아이디가져오기: $currentUserUid');
+
+
   }
 
   @override
-  void iniState() {
+  void initState() {
     super.initState();
     getCurrentUser();
   }
@@ -45,14 +114,14 @@ class _NavBarState extends State<NavBar>{
             shadowColor: Colors.black,
             title: Column(
               children: <Widget>[
-                new Text('${loggedUser?.email}님 로그아웃 하시겠습니까?'),
+                new Text(currentUser?.name ?? ''+tr('dologout')),
               ],
             ),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text('로그인 화면으로 이동합니다'),
+                Text('movelogin').tr(),
               ],
             ),
             actions: <Widget> [
@@ -63,7 +132,7 @@ class _NavBarState extends State<NavBar>{
                   shadowColor: Colors.black12,
                 ),
                 onPressed: () => Navigator.of(context).pop(),
-                child: Text('고양이 더 구경하기'),
+                child: Text('notlogout').tr(),
               ),
               new ElevatedButton(
                 style: ElevatedButton.styleFrom(
@@ -83,26 +152,31 @@ class _NavBarState extends State<NavBar>{
                     ),
                   );
                 },
-                child: Text('로그아웃 하기'),
+                child: Text('logout').tr(),
               ),
             ],
           );
         }
     );
   }
+
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
       child: ListView(
         children: [
           UserAccountsDrawerHeader(
-            accountName: Text('고양이'),
-            accountEmail: Text('meowmeow@gmail.com'),
-            currentAccountPicture: CircleAvatar(
-              child: ClipOval(
-                child: Image.asset('asset/img/animal_neko.png',
-                    width: 80, height: 80),
-              ),
+            accountName: Text(currentUser?.name ?? ''), // 사용자 닉네임
+            accountEmail: Text(currentUser?.email ?? ''), // 사용자 이메일
+            currentAccountPicture: (currentUser?.profilePic == null)
+                ? CircleAvatar(
+              backgroundImage: AssetImage('asset/image/animal_neko.png'), // 기본 이미지 설정
+            )
+                : CircleAvatar(
+              backgroundImage: (currentUser!.profilePic != null)
+                  ? NetworkImage(currentUser!.profilePic) : null
+
             ),
             decoration: BoxDecoration(
               color: Colors.white,
@@ -113,7 +187,7 @@ class _NavBarState extends State<NavBar>{
           ),
           ListTile(
             leading: Icon(Icons.home),
-            title: Text('홈'),
+            title: Text('Home').tr(),
             onTap: () {
               Navigator.push(context,
                   MaterialPageRoute(builder: (context) => HomeScreen()));
@@ -121,7 +195,7 @@ class _NavBarState extends State<NavBar>{
           ),
           ListTile(
             leading: Icon(Icons.account_circle),
-            title: Text('프로필 변경'),
+            title: Text('profile change').tr(),
             onTap: () {
               Navigator.push(
                   context, MaterialPageRoute(builder: (context) => Account()));
@@ -129,7 +203,7 @@ class _NavBarState extends State<NavBar>{
           ),
           ListTile(
             leading: Icon(Icons.settings),
-            title: Text('환경설정'),
+            title: Text('settings').tr(),
             onTap: () {
               Navigator.push(
                   context, MaterialPageRoute(builder: (context) => Setting()));
@@ -137,7 +211,7 @@ class _NavBarState extends State<NavBar>{
           ),
           ListTile(
             leading: Icon(Icons.exit_to_app),
-            title: Text('로그아웃 하기'),
+            title: Text('logout').tr(),
             onTap: () {
               showLogOutCheckDialog();
             },
