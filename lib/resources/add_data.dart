@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:typed_data';
 
 import 'dart:io';
@@ -28,7 +29,7 @@ class ImageStoreMethods{
   }
 
   //firestore에 업로드
-  Future<String> uploadPost(String description, Uint8List file,String user) async{
+  Future<String> uploadPost(String description, Uint8List file,String user,) async{
     String res = 'some Error occured';
     try{
       String photoUrl = await imageToStorage(file);
@@ -39,6 +40,7 @@ class ImageStoreMethods{
         datePublished : DateTime.now(),
         postUrl : photoUrl,
         user: user,
+        like : 0,
       );
       
       _firestore.collection('uploadImgTest').doc(postId).set(post.toJson());
