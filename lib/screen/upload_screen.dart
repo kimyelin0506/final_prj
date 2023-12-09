@@ -1,6 +1,8 @@
 import 'dart:io';
 
+import 'package:bootpay/model/item.dart';
 import 'package:bootpay/model/user.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_prj/screen/home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +12,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:final_prj/resources/add_data.dart';
 
 
 //사용자가 게시물 올릴때 작성하는 화면
@@ -54,7 +57,7 @@ class _UploadState extends State<UploadScreen> {
           onPressed: (){
             postImage();
             num++;
-            Get.to(HomeScreen(),arguments: uploadPost());
+            Navigator.push(context, MaterialPageRoute(builder: (context)=> HomeScreen()));
             },
         ),
       ) ,
@@ -112,13 +115,14 @@ class _UploadState extends State<UploadScreen> {
     setState(() {
       _isLoading = true;
     });
+
     try{
-      String res = await ImageStoreMethods().uploadPost(textEditingController.text, _file!);
+      String res = await ImageStoreMethods().uploadPost(textEditingController.text, _file!, _authentication.currentUser!.email!);
       if(res == 'success'){
-        setState(() {
+        showSnackBar('posted', context);
+       setState((){
           _isLoading = false;
         });
-        showSnackBar('posted', context);
       }else{
         setState(() {
           _isLoading = false;
@@ -175,13 +179,13 @@ class _UploadState extends State<UploadScreen> {
 
   }
 
+
+
   // 하나의 게시글 해당
   Widget uploadPost() {
     return Column(
       children: [
-        _isLoading
-            ? const LinearProgressIndicator()
-            : const Padding(padding: EdgeInsets.only(top: 0)),
+        _isLoading == true? const LinearProgressIndicator() : const Padding(padding: EdgeInsets.only(top: 0)),
         Container(
           padding: EdgeInsets.symmetric(horizontal: 10),
           height: 80,
@@ -247,3 +251,5 @@ class _UploadState extends State<UploadScreen> {
     );
   }
 }
+
+

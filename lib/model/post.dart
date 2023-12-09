@@ -5,12 +5,14 @@ class Post{
   final String postId;
   final datePublished;
   final String postUrl;
+  final String user;
 
   const Post({
     required this.description,
     required this.postId,
     required this.datePublished,
     required this.postUrl,
+    required this.user,
 });
 
   Map<String, dynamic> toJson() =>{
@@ -18,6 +20,7 @@ class Post{
     "postId": postId,
     "datePublished": datePublished,
     "postUrl" : postUrl,
+    "user": user,
   };
 
 }

@@ -26,6 +26,10 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen>{
+  CollectionReference _reference = FirebaseFirestore.instance.collection('uploadImgTest');
+  late Stream<QuerySnapshot> _stream = _reference.snapshots();
+
+  final _authentication = FirebaseAuth.instance;
   User? loggedUser; //초기화 시키지 않을 것임
   bool _startApp = false;
   late Timer _timer;
@@ -172,21 +176,41 @@ class _HomeScreenState extends State<HomeScreen>{
           AnimatedOpacity(
             duration: Duration(seconds: 5),
             opacity: _startApp ? 1.0 : 0.0,
-            child: SingleChildScrollView(
-                //overflow 방지 -> scroll
-                child: Container(
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height,
-              child: ListView.separated(
-                itemCount: 2,
-                itemBuilder: (BuildContext context, int index) {
-                  return Get.arguments;
-                },
-                separatorBuilder: (BuildContext context, int index) {
-                  return SizedBox(height: 5);
-                },
-              ),
-            )),
+            child: StreamBuilder<QuerySnapshot>(
+              stream: _stream,
+              builder: (BuildContext context, AsyncSnapshot snapshot){
+                //오류 체크
+                if(snapshot.hasError){
+                  return Center(child: Text('오류발생 ${snapshot.error}'));
+                }
+
+                //get data
+                QuerySnapshot querySnapshot = snapshot.data;
+                List<QueryDocumentSnapshot> documents = querySnapshot.docs;
+
+                //doc -> Maps
+                List<Map> items = documents.map((e) => e.data() as Map).toList();
+
+                //list보여주기
+                return ListView.builder(
+                  itemCount: items.length,
+                  itemBuilder: (BuildContext context,int index){
+                    Map thisItem = items[index];   //get the item at this index
+                    return ListTile(
+                      title: Text('${thisItem['user']}'),
+                      subtitle: Text('${thisItem['description']}'),
+                      leading: Container(
+                          height: 200,
+                          width: 150,
+                          child: thisItem.containsKey('postUrl')
+                              ?Image.network('${thisItem['postUrl']}')
+                              :Container()),
+                    );
+                  },
+                );
+
+              },
+            )
           ),
         ],
       ),
