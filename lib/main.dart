@@ -8,7 +8,14 @@ import 'package:firebase_core/firebase_core.dart' show FirebaseOptions, Firebase
 import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:final_prj/resources/add_data.dart';
+
+final supportedLocales = [
+  Locale('en', 'US'),
+  Locale('ko', 'KR'),
+  Locale('ja', 'JP')
+];
 
 void main() async {
   // 플러터에서 사용하는 플러그인을 초기화 할 때 이 플러그인에
@@ -19,13 +26,33 @@ void main() async {
   //--> WidgetsFlutterBinding.ensureInitialized();이 그 기능을 처리
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await EasyLocalization.ensureInitialized();
+
+
 
   KakaoSdk.init(
     nativeAppKey: '8a2e2681fe7d5ce926ef755864619db3',
     javaScriptAppKey: '03bf351027d9ff04c740f35cad592c45',
   );
   runApp(
-    GetMaterialApp(
+    EasyLocalization(
+      supportedLocales: supportedLocales,
+      path: 'asset/translations',
+      fallbackLocale: Locale('ko', 'KR'),
+      startLocale: Locale('ko', 'KR'),
+      child: MyApp(),
+    ),
+  );
+}
+
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      localizationsDelegates: context.localizationDelegates,
+      supportedLocales: context.supportedLocales,
+      locale: context.locale,
       debugShowCheckedModeBanner: false,
       title: 'Chatting App',
       theme: ThemeData(
@@ -33,13 +60,13 @@ void main() async {
       ),
       home: StreamBuilder(
         stream: FirebaseAuth.instance.authStateChanges(),
-        builder: (context, snapshot){
-          if(snapshot.hasData){ //인증받은 데이터가 존재할 시
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
             return HomeScreen();
           }
           return LoginSignupScreen();
         },
       ),
-    )
-  );
+    );
+  }
 }

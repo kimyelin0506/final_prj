@@ -21,7 +21,6 @@ class ImageStoreMethods{
   Future<String> imageToStorage(Uint8List file) async{
     String id = const Uuid().v1();  //post의 id
     Reference ref = _storage.ref().child('testImg').child(id);
-    
     UploadTask uploadTask = ref.putData(file);
     TaskSnapshot snapshot = await uploadTask;
     String downloadUrl = await snapshot.ref.getDownloadURL();
@@ -29,7 +28,7 @@ class ImageStoreMethods{
   }
 
   //firestore에 업로드
-  Future<String> uploadPost(String description, Uint8List file) async{
+  Future<String> uploadPost(String description, Uint8List file,String user) async{
     String res = 'some Error occured';
     try{
       String photoUrl = await imageToStorage(file);
@@ -39,6 +38,7 @@ class ImageStoreMethods{
         postId: postId,
         datePublished : DateTime.now(),
         postUrl : photoUrl,
+        user: user,
       );
       
       _firestore.collection('uploadImgTest').doc(postId).set(post.toJson());
