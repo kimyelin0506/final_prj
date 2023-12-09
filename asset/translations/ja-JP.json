@@ -4,10 +4,13 @@
   "Home": "ホーム",
   "cancle": "キャンセル",
   "save": "セーブ",
-  "pick the profile": "変更するプロフィール写真を選んでください。",
+  "pick the profile": "変更する写真を選んでください。",
   "camera" : "カメラ",
   "gallery" : "ギャラリー",
   "dark mode" : "ダークモード",
+  "name" : "名前",
+  "email" : "イーメール",
+  "facat" : "推し猫",
   "language" : "言語",
   "korean" : "韓国語",
   "english" : "英語",
@@ -15,5 +18,12 @@
   "vibration" : "振動",
   "common" : "共通",
   "account" : "アカウント",
-  "etc" : "その他"
+  "etc" : "その他",
+  "logout" : "ログアウト",
+  "SelectLanguage" : "言語を選んでください。",
+  "nowlanguage" : "日本語",
+  "test" : "テスト",
+  "dologout" : "様，ログアウトしますか？",
+  "movelogin" : "ログインに移動",
+  "notlogout" : "猫をもっと見る"
 }

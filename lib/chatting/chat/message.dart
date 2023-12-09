@@ -7,29 +7,35 @@ class Messages extends StatefulWidget {
   final String sendUserUid;
   final String rcvUserEmail;
   final String rcvUserUid;
+  final bool isSingle;
 
   const Messages(
       {required this.sendUserUid,
       required this.rcvUserEmail,
       required this.rcvUserUid,
+        required this.isSingle,
       super.key});
 
   @override
   State<Messages> createState() => _MessagesState(
       sendUserUid: sendUserUid,
       rcvUserEmail: rcvUserEmail,
-      rcvUserUid: rcvUserUid);
+      rcvUserUid: rcvUserUid,
+    isSingle: isSingle
+  );
 }
 
 class _MessagesState extends State<Messages> {
   final String sendUserUid;
   final String rcvUserEmail;
   final String rcvUserUid;
+  final bool isSingle;
 
   _MessagesState({
     required this.sendUserUid,
     required this.rcvUserEmail,
     required this.rcvUserUid,
+    required this.isSingle,
   });
 
 
@@ -67,6 +73,7 @@ class _MessagesState extends State<Messages> {
                   sendUserName: chatDocs[index]['sendUserName'],
                   rcvUserName: chatDocs[index]['rcvUserName'],
                   time: dt,
+                  userUid: chatDocs[index]['sendUserUid'],
                 );
               if ((rcvUserUid == chatDocs[index]['sendUserUid'].toString())
                   && (sendUserUid == chatDocs[index]['rcvUserUid'].toString()))
@@ -76,6 +83,7 @@ class _MessagesState extends State<Messages> {
                   sendUserName: chatDocs[index]['rcvUserName'],
                   rcvUserName: chatDocs[index]['sendUserName'],
                   time: dt,
+                  userUid: chatDocs[index]['rcvUserUid'],
                 );
               return Container();
             },

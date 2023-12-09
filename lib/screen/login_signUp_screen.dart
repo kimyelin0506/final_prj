@@ -38,23 +38,6 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
 
   bool showSpinner = false;
 
-  File? userPickedImage;
-  void pickedImage(File image){
-    userPickedImage = image;
-  }
-
-  void showAlert(BuildContext context) {
-    //호출되면 위젯트리에 삽입되어야 하므로 인자ㄱ밧이 context
-    showDialog(
-        context: context,
-        builder: (context) {
-          return Dialog(
-            backgroundColor: Colors.white,
-            child: AddImage(addImageFunc: pickedImage,)
-          );
-        });
-  }
-
   //form이 유효한지 확인 -> 유효하면 null값 전달됨
   void _tryValidation() {
     //모든 텍스트필드에 있는 validate를 실행 시킬 수 있음
@@ -352,15 +335,6 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                                       ),
                                       SizedBox(
                                         width: 15,
-                                      ),
-                                      if(isSignupScreen)
-                                      GestureDetector(
-                                        onTap: (){
-                                          showAlert(context);
-                                        },
-                                        child: Icon(Icons.image,
-                                        color: isSignupScreen ? Colors.cyan : Colors.grey[300],
-                                        ),
                                       ),
                                     ],
                                   ),
@@ -680,12 +654,6 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                             email: userEmail,
                             password: userPassWord,
                           );
-                          //이미지 저장 경로 접근
-                          final refImage = FirebaseStorage.instance.ref()
-                              .child('picked_image')
-                              .child(newUser.user!.uid+'.png');
-                          await refImage.putFile(userPickedImage!);
-
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text('가입 되셨습니다! 로그인을 진행해 주세요.'),

@@ -50,7 +50,7 @@ class _NewMassagesState extends State<NewMassages> {
       'rcvUserEmail': rcvUserEmail.toString(),
       'rcvUserUid' : rcvUserUid.toString(),
       'rcvUserName' : rcvUserData.data()!['userName'],
-      //'likeMessage' : false,
+      'likeMessage' : false,
     });
     _controller.clear(); //sending시 텍스트필드 값을 지움
   }

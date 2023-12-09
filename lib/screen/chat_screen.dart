@@ -10,11 +10,13 @@ class ChatScreen extends StatefulWidget {
   final String rcvUserEmail;
   final String rcvUserUid;
   final String titleUser;
+  final bool isSingle;
 
   const ChatScreen({required this.sendUserUid,
     required this.rcvUserEmail,
     required this.rcvUserUid,
     required this.titleUser,
+    required this.isSingle,
     Key? key})
       : super(key: key);
 
@@ -24,7 +26,8 @@ class ChatScreen extends StatefulWidget {
           sendUserUid: sendUserUid,
           rcvUserEmail: rcvUserEmail,
           rcvUserUid: rcvUserUid,
-          titleUser: titleUser
+          titleUser: titleUser,
+        isSingle: isSingle,
       );
 }
 //stream은 지속적으로 받는 데이터를 처리할 때 필요
@@ -41,12 +44,14 @@ class _ChatScreenState extends State<ChatScreen> {
   String rcvUserUid;
   String rcvUserName = '';
   String titleUser;
+  bool isSingle;
 
   _ChatScreenState(
       {required this.sendUserUid,
       required this.rcvUserEmail,
       required this.rcvUserUid,
-      required this.titleUser});
+      required this.titleUser,
+      required this.isSingle,});
 
   // 채팅방으로 이동할 때마다 실행할것임
   /*
@@ -104,6 +109,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     sendUserUid: sendUserUid,
                     rcvUserEmail: rcvUserEmail,
                     rcvUserUid: rcvUserUid,
+                    isSingle: isSingle,
                   ),
                 ),
                 NewMassages(
