@@ -40,11 +40,9 @@ class _NewMassagesState extends State<NewMassages> {
         .doc(sendUserUid)
         .get();
     final rcvUserData = await FirebaseFirestore.instance.collection('user').doc(rcvUserUid).get();
-    //final chatRoom1 = FirebaseFirestore.instance.collection('chats').doc('${userData.data()!['email']}');
-    // var isReadyChat1 = await chatRoom1.get();
 
     //만약 채팅방이 안만들어져있다면
-    FirebaseFirestore.instance.collection('chat').add({
+     await FirebaseFirestore.instance.collection('chat').add({
       'text': _userEnterMessage,
       'time': Timestamp.now(),
       'sendUserUid': sendUserUid,
@@ -52,7 +50,7 @@ class _NewMassagesState extends State<NewMassages> {
       'rcvUserEmail': rcvUserEmail.toString(),
       'rcvUserUid' : rcvUserUid.toString(),
       'rcvUserName' : rcvUserData.data()!['userName'],
-      //'likeMessage' : false,
+      'likeMessage' : false,
     });
     _controller.clear(); //sending시 텍스트필드 값을 지움
   }
@@ -82,7 +80,7 @@ class _NewMassagesState extends State<NewMassages> {
           IconButton(
             //문자열의 양 끝을 제거한 경우에 비어있을 경우
             // 괄호가 있다면 메소드가 실행된다는 의미이며 값이 리턴된다는 의미임
-            // 반대의 경우 위치를 참조하는 것임ㅗ
+            // 반대의 경우 위치를 참조하는 것임
             onPressed: _userEnterMessage.trim().isEmpty ? null : _sendMessage,
             icon: Icon(
               Icons.send,

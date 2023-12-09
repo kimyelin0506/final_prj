@@ -1,5 +1,3 @@
-import 'package:final_prj/add_image/add_image.dart';
-import 'package:final_prj/screen/chat_screen.dart';
 import 'package:final_prj/screen/home_screen.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
@@ -38,18 +36,6 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
   final _authentication = FirebaseAuth.instance; //사용자의 등록/인증
 
   bool showSpinner = false;
-
-  void showAlert(BuildContext context) {
-    //호출되면 위젯트리에 삽입되어야 하므로 인자ㄱ밧이 context
-    showDialog(
-        context: context,
-        builder: (context) {
-          return Dialog(
-            backgroundColor: Colors.white,
-            child: AddImage()
-          );
-        });
-  }
 
   //form이 유효한지 확인 -> 유효하면 null값 전달됨
   void _tryValidation() {
@@ -348,14 +334,6 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                                       ),
                                       SizedBox(
                                         width: 15,
-                                      ),
-                                      GestureDetector(
-                                        onTap: (){
-                                          showAlert(context);
-                                        },
-                                        child: Icon(Icons.image,
-                                        color: isSignupScreen ? Colors.cyan : Colors.grey[300],
-                                        ),
                                       ),
                                     ],
                                   ),
@@ -660,6 +638,14 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                         showSpinner = true; //spinner end
                       });
                       if(isSignupScreen){
+                        //이미지 등록 메세지
+                        setState(() {
+                          showSpinner = false;
+                          SnackBar(
+                            content: Text('이미지 선택해주세요'),
+                            backgroundColor: Colors.blue,
+                          );
+                        });
                         _tryValidation();
                         // try catch를 사용하여 오류가 났을 경우 앱이 다운되거나 멈추는 것을 방지하고 사용자에게 이유를 설명함
                         try{
@@ -678,19 +664,24 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                               .doc(newUser.user!.uid).set({
                             'userName' : userName,
                             'email' : userEmail,
-                            'userUid' : newUser.user!.uid
+                            'userUid' : newUser.user!.uid,
+                            'profileImageUrl' : 'No setting Image'
                           });
                           setState(() {
                             showSpinner = false; //spinner end
                           });
                         }catch(e){
                           print(e);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('가입 입력 양식을 확인해주세요'),
-                              backgroundColor: Colors.red,
-                            ),
-                          );
+                          if(mounted) {
+                            //async 방식으로 사용자 입력을 처리하는데 바뀌는 위젯트리로 인해 다른 context를 사용하여
+                            //호출이되는 문제를 해결하기 위해 mounted사용하면 위젯이 사라지는 순간 조건이 false가됨
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('가입 입력 양식을 확인해주세요'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
                           setState(() {
                             showSpinner = false; //spinner end
                           });
