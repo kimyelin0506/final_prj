@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_prj/config/setting.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -24,8 +26,7 @@ class NavBar extends StatefulWidget {
 
 
 
-class _NavBarState extends State<NavBar>{
-
+class _NavBarState extends State<NavBar> {
 
 
   void _showLanguageDialog() {
@@ -92,21 +93,41 @@ class _NavBarState extends State<NavBar>{
       currentUser = UserModel.fromMap(userData.data()!);
     });
     log('debug 유저아이디가져오기: $currentUserUid');
-
-
   }
+
+  final StreamController<UserModel?> _userStreamController =
+  StreamController<UserModel?>.broadcast();
 
   @override
   void initState() {
     super.initState();
     getCurrentUser();
+    // Firebase의 user 데이터가 업데이트 될 때마다 Stream에 추가
+    FirebaseFirestore.instance
+        .collection('user')
+        .doc(currentUserUid)
+        .snapshots()
+        .listen((DocumentSnapshot snapshot) {
+      if (snapshot.exists) {
+        var data = snapshot.data() as Map<String, dynamic>;
+        var updatedUser = UserModel.fromMap(data);
+        // Stream을 통해 업데이트된 사용자 정보를 전달
+        _userStreamController.add(updatedUser);
+      }
+    });
   }
 
-  void showLogOutCheckDialog(){
+  @override
+  void dispose() {
+    _userStreamController.close();
+    super.dispose();
+  }
+
+  void showLogOutCheckDialog() {
     showDialog(
         context: context,
         barrierDismissible: false, //dialog를 제외한 다른 화면 터치X
-        builder: (BuildContext context){
+        builder: (BuildContext context) {
           return AlertDialog(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10.0),
@@ -114,7 +135,7 @@ class _NavBarState extends State<NavBar>{
             shadowColor: Colors.black,
             title: Column(
               children: <Widget>[
-                new Text(currentUser?.name ?? ''+tr('dologout')),
+                new Text(currentUser?.name ?? '' + tr('dologout')),
               ],
             ),
             content: Column(
@@ -124,7 +145,7 @@ class _NavBarState extends State<NavBar>{
                 Text('movelogin').tr(),
               ],
             ),
-            actions: <Widget> [
+            actions: <Widget>[
               new ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   primary: Colors.black45,
@@ -164,59 +185,71 @@ class _NavBarState extends State<NavBar>{
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      child: ListView(
-        children: [
-          UserAccountsDrawerHeader(
-            accountName: Text(currentUser?.name ?? ''), // 사용자 닉네임
-            accountEmail: Text(currentUser?.email ?? ''), // 사용자 이메일
-            currentAccountPicture: (currentUser?.profilePic == null)
-                ? CircleAvatar(
-              backgroundImage: AssetImage('asset/image/animal_neko.png'), // 기본 이미지 설정
-            )
-                : CircleAvatar(
-              backgroundImage: (currentUser!.profilePic != null)
-                  ? NetworkImage(currentUser!.profilePic) : null
+      child: StreamBuilder<UserModel?>(
+        // StreamBuilder를 사용하여 Stream의 데이터를 감시하고 UI를 업데이트
+        stream: _userStreamController.stream,
+        builder: (context, snapshot) {
+          return ListView(
+            children: [
+              UserAccountsDrawerHeader(
+                accountName: Text(currentUser?.name ?? ''), // 사용자 닉네임
+                accountEmail: Text(currentUser?.email ?? ''), // 사용자 이메일
+                currentAccountPicture: (currentUser?.profilePic ==
+                    null) //현재 유저의 프로필사진 존재하지않을때
+                    ? CircleAvatar(
+                  backgroundImage: AssetImage(
+                      'asset/image/animal_neko.png'), // 기본 이미지 설정
+                )
+                    : CircleAvatar(
+                    backgroundImage: (currentUser!.profilePic !=
+                        null) //프로필사진이 null이 아닐때
+                        ? NetworkImage(currentUser!.profilePic)
+                        : null //currentUser의 이미지 가져오기
 
-            ),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              image: DecorationImage(
-                  fit: BoxFit.fill,
-                  image: AssetImage('asset/image/bg_ocean_suiheisen.jpg')),
-            ),
-          ),
-          ListTile(
-            leading: Icon(Icons.home),
-            title: Text('Home').tr(),
-            onTap: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => HomeScreen()));
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.account_circle),
-            title: Text('profile change').tr(),
-            onTap: () {
-              Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => Account()));
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.settings),
-            title: Text('settings').tr(),
-            onTap: () {
-              Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => Setting()));
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.exit_to_app),
-            title: Text('logout').tr(),
-            onTap: () {
-              showLogOutCheckDialog();
-            },
-          ),
-        ],
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  image: DecorationImage(
+                      fit: BoxFit.fill,
+                      image: AssetImage('asset/image/bg_ocean_suiheisen.jpg')),
+                ),
+              ),
+              ListTile(
+                leading: Icon(Icons.home),
+                title: Text('Home').tr(),
+                onTap: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => HomeScreen()));
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.account_circle),
+                title: Text('profile change').tr(),
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Account()));
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.settings),
+                title: Text('settings').tr(),
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Setting()));
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.exit_to_app),
+                title: Text('logout').tr(),
+                onTap: () {
+                  showLogOutCheckDialog();
+                },
+              ),
+            ],
+          );
+        },
       ),
     );
   }

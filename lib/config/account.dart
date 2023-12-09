@@ -233,6 +233,7 @@ class _AccountState extends State<Account> {
                               .readAsBytes(); // PickedFile을 Uint8List로 변환
                           String imageUrl = await uploadImageToStorage(file);
 
+
                           // 이미지 URL을 Firestore에 저장
                           var userDocRef =
                               firestore.collection('user').doc(currentUserUid);
