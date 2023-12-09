@@ -119,7 +119,7 @@ class _AccountState extends State<Account> {
                       child: ClipOval(
                         child: CircleAvatar(
                           radius: 80,
-                          backgroundImage: (_imageFile == null && currentUser?.profilePic == null)
+                          backgroundImage: (_imageFile == null && (currentUser?.profilePic == null || currentUser?.profilePic == 'No setting Image'))
                               ? AssetImage('asset/image/animal_neko.png') // 기본 이미지 설정
                               : (_imageFile != null)
                                   ? FileImage(File(_imageFile!.path))

@@ -665,7 +665,8 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                             'userName' : userName,
                             'email' : userEmail,
                             'userUid' : newUser.user!.uid,
-                            'profileImageUrl' : 'No setting Image'
+                            'profileImageUrl' : 'No setting Image',
+                            'facat' : ''
                           });
                           setState(() {
                             showSpinner = false; //spinner end
