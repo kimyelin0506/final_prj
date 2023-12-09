@@ -73,7 +73,7 @@ class _MessagesState extends State<Messages> {
                   sendUserName: chatDocs[index]['sendUserName'],
                   rcvUserName: chatDocs[index]['rcvUserName'],
                   time: dt,
-                  userUid: chatDocs[index]['sendUserUid'],
+                  userUid: sendUserUid,
                 );
               if ((rcvUserUid == chatDocs[index]['sendUserUid'].toString())
                   && (sendUserUid == chatDocs[index]['rcvUserUid'].toString()))
@@ -83,7 +83,7 @@ class _MessagesState extends State<Messages> {
                   sendUserName: chatDocs[index]['rcvUserName'],
                   rcvUserName: chatDocs[index]['sendUserName'],
                   time: dt,
-                  userUid: chatDocs[index]['rcvUserUid'],
+                  userUid: rcvUserUid,
                 );
               return Container();
             },

@@ -1,4 +1,3 @@
-import 'package:final_prj/add_image/add_image.dart';
 import 'package:final_prj/screen/home_screen.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
@@ -13,7 +12,7 @@ import 'package:flutter_naver_login/flutter_naver_login.dart';
 import '../../config/login_platform.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; //userID는 엑스트라데이터이므로
-import 'package:firebase_storage/firebase_storage.dart';
+
 
 // class 안에서 변화되는 인스턴스를 적용하기 위해 statefulwidget 사용
 class LoginSignupScreen extends StatefulWidget {
@@ -665,7 +664,8 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                               .doc(newUser.user!.uid).set({
                             'userName' : userName,
                             'email' : userEmail,
-                            'userUid' : newUser.user!.uid
+                            'userUid' : newUser.user!.uid,
+                            'profileImageUrl' : 'No setting Image'
                           });
                           setState(() {
                             showSpinner = false; //spinner end

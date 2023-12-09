@@ -2,20 +2,12 @@ import 'dart:async';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_prj/screen/chat_list_screen.dart';
-import 'package:final_prj/screen/chat_screen.dart';
 import 'package:final_prj/screen/payment_screen.dart';
 import 'package:final_prj/screen/upload_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:get/get.dart';
-
 import '../config/NavBar.dart';
-import '../config/account.dart';
 import '../config/palette.dart';
-import '../config/setting.dart';
-import 'login_signUp_screen.dart';
 
 
 //피드가 보일 수 있는 homescreen화면
