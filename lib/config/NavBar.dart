@@ -169,8 +169,9 @@ class _NavBarState extends State<NavBar>{
           UserAccountsDrawerHeader(
             accountName: Text(currentUser?.name ?? ''), // 사용자 닉네임
             accountEmail: Text(currentUser?.email ?? ''), // 사용자 이메일
-            currentAccountPicture: (currentUser?.profilePic == null)
-                ? CircleAvatar(
+            currentAccountPicture: (currentUser?.profilePic == null || currentUser?.profilePic == 'No setting Image')
+
+    ? CircleAvatar(
               backgroundImage: AssetImage('asset/image/animal_neko.png'), // 기본 이미지 설정
             )
                 : CircleAvatar(
