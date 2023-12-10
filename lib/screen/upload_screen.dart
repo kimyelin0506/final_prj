@@ -118,7 +118,7 @@ class _UploadState extends State<UploadScreen> {
     });
 
     try{
-      String res = await ImageStoreMethods().uploadPost(textEditingController.text, _file!, _authentication.currentUser!.email!);
+      String res = await ImageStoreMethods().uploadPost(textEditingController.text, _file!, _authentication.currentUser!.email!,);
       if(res == 'success'){
         showSnackBar('posted', context);
        setState((){

@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:final_prj/screen/chat_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -31,7 +30,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.black,
-        title: Text('집사들과 대화하기').tr(),
+        title: Text('집사들과 대화하기'),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -44,7 +43,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
               maxLines: null,
               decoration: InputDecoration(
                 icon: Icon(Icons.search),
-                labelText: tr('집사 찾기'),
+                labelText: ' 집사 찾기',
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(
                     color: Palette.textColor1,
@@ -62,7 +61,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                     Radius.circular(35.0),
                   ),
                 ),
-                hintText: tr('집사 이메일을 입력해 주세요'),
+                hintText: '집사 이메일을 입력해 주세요',
                 hintStyle: TextStyle(
                   fontSize: 14,
                   color: Palette.textColor1,
@@ -141,8 +140,8 @@ class _ChatListScreenState extends State<ChatListScreen> {
                                     children: [
                                       Text(
                                         _isSingleChat ?
-                                        tr('[개인 채팅방] UserName : ') :
-                                        tr('[단체 채팅방] UserName : ')
+                                        '[개인 채팅방] UserName : ' :
+                                        '[단체 채팅방] UserName : '
                                         ,
                                         style: TextStyle(
                                           color: Colors.white,
