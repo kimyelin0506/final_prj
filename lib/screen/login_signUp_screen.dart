@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:final_prj/screen/home_screen.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
@@ -163,7 +164,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
           const Color(0xff0165E1),
         ),
       ),
-      child: const Text('로그아웃'),
+      child: const Text('logout').tr(),
     );
   }
 
@@ -209,7 +210,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                             children: [
                               TextSpan(
                                 //앱 이름 강조
-                                text: '안서동 고양이 SNS',
+                                text: tr('안서동 고양이 SNS'),
                                 style: TextStyle(
                                   letterSpacing: 1.0,
                                   fontSize: 25,
@@ -218,7 +219,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                                 ),
                               ),
                               TextSpan(
-                                text: '에 오신 걸 환영합니다!',
+                                text: tr('에 오신 걸 환영합니다!'),
                                 style: TextStyle(
                                   letterSpacing: 1.0,
                                   fontSize: 16,
@@ -234,7 +235,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                         ),
                         Text(
                           //소제목
-                          '안서동 고양이와 함께하고 싶다면 로그인을 해주세요.',
+                          tr('안서동 고양이와 함께하고 싶다면 로그인을 해주세요.'),
                           style: TextStyle(
                             letterSpacing: 1.0,
                             color: Colors.black,
@@ -363,7 +364,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                                     key: ValueKey(1),
                                     validator: (value){
                                       if(value!.isEmpty || value.length <4){
-                                        return '4글자 이상 입력해 주세요';
+                                        return tr('4글자 이상 입력해 주세요');
                                       }
                                       return null;
                                     },
@@ -398,7 +399,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                                           Radius.circular(35.0),
                                         ),
                                       ),
-                                      hintText: '이메일을 입력하세요',
+                                      hintText: tr('pleaseemail'),
                                       hintStyle: TextStyle(
                                         fontSize: 14,
                                         color: Palette.textColor1,
@@ -415,7 +416,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                                     key: ValueKey(2),
                                     validator: (value){
                                       if(value!.isEmpty || value.length < 6){  //파이어베이스 최소 길이
-                                        return '비밀번호는 최소 6글자 이상이여야 합니다';
+                                        return tr('비밀번호는 최소 6글자 이상이여야 합니다');
                                       }
                                       return null;
                                     },
@@ -449,7 +450,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                                           Radius.circular(35.0),
                                         ),
                                       ),
-                                      hintText: '비밀번호를 입력하세요',
+                                      hintText: tr('pleasepwd'),
                                       hintStyle: TextStyle(
                                         fontSize: 14,
                                         color: Palette.textColor1,
@@ -473,7 +474,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                                     key: ValueKey(3),
                                     validator: (value){ //유효성 검사
                                       if(value!.isEmpty || value.length < 4){
-                                        return '4글자 이상 입력해 주세요';
+                                        return tr('4글자 이상 입력해 주세요');
                                       }
                                       return null;
                                     },
@@ -507,7 +508,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                                           Radius.circular(35.0),
                                         ),
                                       ),
-                                      hintText: '이름을 입력하세요',
+                                      hintText: tr('pleasename'),
                                       hintStyle: TextStyle(
                                         fontSize: 14,
                                         color: Palette.textColor1,
@@ -523,7 +524,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                                     key: ValueKey(4),
                                     validator: (value){
                                       if(value!.isEmpty || !value.contains('@')){
-                                        return '이메일의 형식으로 입력해 주세요';
+                                        return tr('이메일의 형식으로 입력해 주세요');
                                       }
                                       return null;
                                     },
@@ -557,7 +558,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                                           Radius.circular(35.0),
                                         ),
                                       ),
-                                      hintText: '이메일을 입력하세요',
+                                      hintText: tr('pleaseemail'),
                                       hintStyle: TextStyle(
                                         fontSize: 14,
                                         color: Palette.textColor1,
@@ -607,7 +608,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                                           Radius.circular(35.0),
                                         ),
                                       ),
-                                      hintText: '비밀번호를 입력하세요',
+                                      hintText: tr('pleasepwd'),
                                       hintStyle: TextStyle(
                                         fontSize: 14,
                                         color: Palette.textColor1,
@@ -642,7 +643,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                         setState(() {
                           showSpinner = false;
                           SnackBar(
-                            content: Text('이미지 선택해주세요'),
+                            content: Text('이미지 선택해주세요').tr(),
                             backgroundColor: Colors.blue,
                           );
                         });
@@ -655,7 +656,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                           );
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('가입 되셨습니다! 로그인을 진행해 주세요.'),
+                              content: Text('가입 되셨습니다! 로그인을 진행해 주세요.').tr(),
                               backgroundColor: Colors.red,
                             ),
                           );
@@ -678,7 +679,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                             //호출이되는 문제를 해결하기 위해 mounted사용하면 위젯이 사라지는 순간 조건이 false가됨
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                content: Text('가입 입력 양식을 확인해주세요'),
+                                content: Text('가입 입력 양식을 확인해주세요').tr(),
                                 backgroundColor: Colors.red,
                               ),
                             );

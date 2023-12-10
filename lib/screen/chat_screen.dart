@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -89,7 +90,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
               ),
               Text(
-                '  집사님과 대화히기',
+                tr('집사님과 대화하기'),
                 style: TextStyle(
                   color: Colors.white54,
                   fontSize: 15,

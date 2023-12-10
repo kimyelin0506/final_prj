@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:final_prj/screen/chat_list_screen.dart';
 import 'package:final_prj/screen/payment_screen.dart';
 import 'package:final_prj/screen/upload_screen.dart';
@@ -87,7 +88,7 @@ class _HomeScreenState extends State<HomeScreen>{
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Text(
-                                    '${_userDocs[index]['userName']} 님 ',
+                                    '${_userDocs[index]['userName']}',
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 20.0,
@@ -95,7 +96,7 @@ class _HomeScreenState extends State<HomeScreen>{
                                     ),
                                   ),
                                   Text(
-                                    '환영합니다',
+                                    tr('환영합니다'),
                                     style: TextStyle(
                                       color: Colors.black45,
                                       fontSize: 20.0,

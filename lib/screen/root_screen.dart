@@ -1,4 +1,5 @@
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:final_prj/screen/profile_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -63,19 +64,19 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin{
               icon: Icon(
                 Icons.home_outlined,
               ),
-              label: '홈'
+              label: tr('Home')
           ),
           BottomNavigationBarItem(
               icon: Icon(
                 Icons.pin_drop,
               ),
-              label: '위치'
+              label: tr('위치')
           ),
           BottomNavigationBarItem(
               icon: Icon(
                   Icons.account_circle_outlined
               ),
-            label: '프로필'
+            label: tr('프로필')
           )
         ]
     );

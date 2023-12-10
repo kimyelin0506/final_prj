@@ -289,7 +289,7 @@ class _AccountState extends State<Account> {
       child: Column(
         children: <Widget>[
           Text(
-            '변경할 프로필 사진을 골라주세요',
+            tr('pick the profile'),
             style: TextStyle(
               fontSize: 20,
             ),
@@ -309,7 +309,7 @@ class _AccountState extends State<Account> {
                   size: 30,
                 ),
                 label: Text(
-                  '촬영하기',
+                  tr('camera'),
                   style: TextStyle(fontSize: 20),
                 ),
               ),
@@ -322,7 +322,7 @@ class _AccountState extends State<Account> {
                   size: 30,
                 ),
                 label: Text(
-                  '파일 가져오기',
+                  tr('gallery'),
                   style: TextStyle(fontSize: 20),
                 ),
               ),

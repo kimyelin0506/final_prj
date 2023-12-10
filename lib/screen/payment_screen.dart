@@ -6,6 +6,7 @@ import 'package:bootpay/model/item.dart';
 import 'package:bootpay/model/payload.dart';
 import 'package:bootpay/model/stat_item.dart';
 import 'package:bootpay/model/user.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:final_prj/payment/webapp_payment.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -27,7 +28,7 @@ class FirstRoute extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('안서동 고양이 후원하기'),
+        title: Text('안서동 고양이 후원하기').tr(),
       ),
       body: Center(
         child: Column(
@@ -59,7 +60,7 @@ class FirstRoute extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Text(
-                  '후원하기',
+                  tr('후원하기'),
                   style: TextStyle(
                     fontSize: 20.0,
                     fontWeight: FontWeight.bold,
@@ -132,7 +133,7 @@ class _SecondRouteState extends State<SecondRoute> {
                         ),
                       ),
                       child: Text(
-                        '일반결제',
+                        tr('일반결제'),
                         style: TextStyle(
                           fontSize: 24.0, // 글씨 크기 키우기
                           fontWeight: FontWeight.bold,
@@ -156,7 +157,7 @@ class _SecondRouteState extends State<SecondRoute> {
                         ),
                       ),
                       child: Text(
-                        '웹결제',
+                        tr('웹결제'),
                         style: TextStyle(
                           fontSize: 24.0, // 글씨 크기 키우기
                           fontWeight: FontWeight.bold,

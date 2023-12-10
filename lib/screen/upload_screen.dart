@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:bootpay/model/item.dart';
 import 'package:bootpay/model/user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:final_prj/screen/home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -49,7 +50,7 @@ class _UploadState extends State<UploadScreen> {
 
     return Scaffold(
       appBar:AppBar(
-        title: Text('오늘 본 고양이 소개해주세요!'),
+        title: Text('오늘 본 고양이 소개해주세요!').tr(),
         centerTitle: true,
         backgroundColor: Colors.grey,
         leading: IconButton(
@@ -169,7 +170,7 @@ class _UploadState extends State<UploadScreen> {
           TextField(
             textAlign: TextAlign.center,
             style: TextStyle(fontWeight: FontWeight.bold),
-            decoration: InputDecoration(hintText: '오늘의 고양이에 대해 입력해주세요'),
+            decoration: InputDecoration(hintText: tr('오늘의 고양이에 대해 입력해주세요')),
             controller: textEditingController,
           )
         ],
