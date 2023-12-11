@@ -48,7 +48,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
       _formKey.currentState!.save();
     }
   }
-
+  //구글 파베연동 완료
   Future<void> signInWithGoogle() async {
     try {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
@@ -76,9 +76,8 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
       print('Google 로그인 실패: $e');
     }
   }
-
-
-  Future<void> signInWithKakao() async {
+  //카카오는 파베에서 제공x
+  void signInWithKakao() async {
     try {
       bool isInstalled = await isKakaoTalkInstalled();
 
@@ -98,24 +97,6 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
       final profileInfo = json.decode(response.body);
       print(profileInfo.toString());
 
-      // 이메일이 없으면 Kakao API에서 이메일을 제공하지 않은 경우이므로 Firebase로 로그인할 수 없음
-      if (profileInfo['kakao_account'] != null &&
-          profileInfo['kakao_account']['email'] != null) {
-        final email = profileInfo['kakao_account']['email'];
-        final kakaoId = profileInfo['id'];
-
-        // Firebase에 사용자 생성 또는 로그인
-        UserCredential userCredential = await FirebaseAuth.instance
-            .signInWithCredential(EmailAuthProvider.credential(
-          email: '$kakaoId@kakao.com', // 카카오톡 ID를 이용하여 가상의 이메일 생성
-          password: kakaoId,
-        ));
-
-        print('Firebase에 로그인 성공: ${userCredential.user?.uid}');
-      } else {
-        print('카카오톡 프로필에 이메일이 없어 Firebase에 로그인할 수 없습니다.');
-      }
-
       setState(() {
         _loginPlatform = LoginPlatform.kakao;
         _loginStatus = true;
@@ -124,7 +105,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
       print('카카오톡으로 로그인 실패: $error');
     }
   }
-
+  //네이버는 파베에서 제공x
   void signInWithNaver() async {
     final NaverLoginResult result = await FlutterNaverLogin.logIn();
 
@@ -142,7 +123,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
       print('Naver login failed. Status: ${result.status}');
     }
   }
-
+  //페이스북 파베연동 완료
   Future<void> signInWithFacebook() async {
     try {
       final LoginResult result = await FacebookAuth.instance.login();
