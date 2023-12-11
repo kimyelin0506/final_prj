@@ -49,22 +49,36 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
     }
   }
 
-  /*void signInWithGoogle() async {
-    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+  Future<void> signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
-    if (googleUser != null) {
-      print('name = ${googleUser.displayName}');
-      print('email = ${googleUser.email}');
-      print('id = ${googleUser.id}');
+      if (googleUser != null) {
+        final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+        final AuthCredential credential = GoogleAuthProvider.credential(
+          accessToken: googleAuth.accessToken,
+          idToken: googleAuth.idToken,
+        );
 
-      setState(() {
-        _loginPlatform = LoginPlatform.google;
-        _loginStatus = true;
-      });
+        await FirebaseAuth.instance.signInWithCredential(credential);
+
+        print('Google 로그인 성공!');
+        print('User ID: ${FirebaseAuth.instance.currentUser?.uid}');
+        print('Display Name: ${FirebaseAuth.instance.currentUser?.displayName}');
+        print('Email: ${FirebaseAuth.instance.currentUser?.email}');
+
+        setState(() {
+          _loginPlatform = LoginPlatform.google;
+          _loginStatus = true;
+        });
+      }
+    } catch (e) {
+      print('Google 로그인 실패: $e');
     }
-  } */
+  }
 
-  void signInWithKakao() async {
+
+  Future<void> signInWithKakao() async {
     try {
       bool isInstalled = await isKakaoTalkInstalled();
 
@@ -83,6 +97,24 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
 
       final profileInfo = json.decode(response.body);
       print(profileInfo.toString());
+
+      // 이메일이 없으면 Kakao API에서 이메일을 제공하지 않은 경우이므로 Firebase로 로그인할 수 없음
+      if (profileInfo['kakao_account'] != null &&
+          profileInfo['kakao_account']['email'] != null) {
+        final email = profileInfo['kakao_account']['email'];
+        final kakaoId = profileInfo['id'];
+
+        // Firebase에 사용자 생성 또는 로그인
+        UserCredential userCredential = await FirebaseAuth.instance
+            .signInWithCredential(EmailAuthProvider.credential(
+          email: '$kakaoId@kakao.com', // 카카오톡 ID를 이용하여 가상의 이메일 생성
+          password: kakaoId,
+        ));
+
+        print('Firebase에 로그인 성공: ${userCredential.user?.uid}');
+      } else {
+        print('카카오톡 프로필에 이메일이 없어 Firebase에 로그인할 수 없습니다.');
+      }
 
       setState(() {
         _loginPlatform = LoginPlatform.kakao;
@@ -111,26 +143,35 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
     }
   }
 
-    void signInWithFacebook() async {
-    final LoginResult result = await FacebookAuth.instance.login();
+  Future<void> signInWithFacebook() async {
+    try {
+      final LoginResult result = await FacebookAuth.instance.login();
 
-    if (result.status == LoginStatus.success) {
-      final url = Uri.https('graph.facebook.com', '/v2.12/me', {
-        'fields': 'id, email, name',
-        'access_token': result.accessToken!.token
-      });
+      if (result.status == LoginStatus.success) {
+        final AccessToken accessToken = result.accessToken!;
+        final OAuthCredential credential = FacebookAuthProvider.credential(accessToken.token);
 
-      final response = await http.get(url);
+        await FirebaseAuth.instance.signInWithCredential(credential);
 
-      final profileInfo = json.decode(response.body);
-      print(profileInfo.toString());
+        final url = Uri.https('graph.facebook.com', '/v2.12/me', {
+          'fields': 'id, email, name',
+          'access_token': accessToken.token,
+        });
 
-      setState(() {
-        _loginPlatform = LoginPlatform.facebook;
-        _loginStatus = true;
-      });
-    } else {
-      print('Facebook login failed. Status: ${result.status}');
+        final response = await http.get(url);
+
+        final profileInfo = json.decode(response.body);
+        print(profileInfo.toString());
+
+        setState(() {
+          _loginPlatform = LoginPlatform.facebook;
+          _loginStatus = true;
+        });
+      } else {
+        print('페이스북 로그인 실패. Status: ${result.status}');
+      }
+    } catch (e) {
+      print('페이스북 로그인 에러: $e');
     }
   }
 
