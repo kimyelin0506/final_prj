@@ -72,7 +72,39 @@ class _HomeScreenState extends State<HomeScreen> {
                 if (snapshot.hasData) {
                   final _userDocs = snapshot.data!.docs;
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Container();
+                    return ListView.builder(
+                        itemCount: _userDocs.length,
+                        itemBuilder: (context, index) {
+                          if (_userDocs[index]['email'] == _userEmail)
+                            return Container(
+                              height: MediaQuery.of(context).size.height,
+                              width: MediaQuery.of(context).size.width,
+                              color: Palette.backgroundColor,
+                              child: Center(
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      '${_userDocs[index]['userName']}',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 20.0,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                    Text(
+                                      tr('환영합니다'),
+                                      style: TextStyle(
+                                        color: Colors.black45,
+                                        fontSize: 20.0,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          return Container();
+                        });
                   }
                   return ListView.builder(
                       itemCount: _userDocs.length,
@@ -244,9 +276,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
 
+
   void showPost(String userName, String contents
       , DateTime time, String ImageUrl, int likes, String postId, bool likePost) async {
-    int like = likes;
     await FirebaseFirestore.instance.collection('uploadImgTest').where('postId', isEqualTo: postId).get().then((value) {
       for (var snap in value.docs) {
         print('-------likeUser------');
@@ -265,150 +297,151 @@ class _HomeScreenState extends State<HomeScreen> {
     showDialog(
         context: context,
         barrierDismissible: false,
-        builder: (BuildContext context) {
-          return SingleChildScrollView(
-            child: AlertDialog(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              shadowColor: Colors.black,
-              title:
-              new Column(
-                children: <Widget>[
-                  new Text(
-                    '유저 이름 : ${userName}',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+        builder: (context) {
+          return StatefulBuilder(
+            builder:(BuildContext conext, StateSetter setState) {
+              return SingleChildScrollView(
+                child: AlertDialog(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
                   ),
-                ],
-              ),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  new Text(
-                      '업로드 날짜 : ${time.year}년 ${time.month}월 ${time.day}일 ${time.hour}시 ${time.minute}분',
-                      style: TextStyle(fontSize: 15, color: Colors.black)),
-                  new Image.network(
-                    ImageUrl,
-                    scale: 1.0,
+                  shadowColor: Colors.black,
+                  title:
+                  new Column(
+                    children: <Widget>[
+                      new Text(
+                        '유저 이름 : ${userName}',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ],
                   ),
-                  new Text(
-                    '내용 : ${contents} ',
-                    style: TextStyle(fontSize: 15.0, color: Colors.black45),
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      new Text(
+                          '업로드 날짜 : ${time.year}년 ${time.month}월 ${time
+                              .day}일 ${time.hour}시 ${time.minute}분',
+                          style: TextStyle(fontSize: 15, color: Colors.black)),
+                      new Image.network(
+                        ImageUrl,
+                        scale: 1.0,
+                      ),
+                      new Text(
+                        '내용 : ${contents} ',
+                        style: TextStyle(fontSize: 15.0, color: Colors.black45),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-              actions: <Widget>[
-               new Column(
-                  children: [
-                    new Text(
-                      '$like',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold, color: Colors.black),
-                    ),
-                    new GestureDetector(
-                      onDoubleTap: () {
-                        if (likePost == false) {
-                          setState(() {
-                            likePost = true;
-                            _reference
-                                .where('postId', isEqualTo: postId)
-                                .get()
-                                .then((value) {
-                              for (var docs in value.docs) {
-                                Map<String, int> addLike = {
-                                  'like': docs['like'] + 1
-                                };
-                                _reference.doc(postId).update(addLike);
-                                setState(() {
-                                  like = docs['like'];
-                                });
-                                Map<String, dynamic> userLike = {
-                                  'likeUser': FieldValue.arrayUnion([userName]),
-                                };
-                                _reference.doc(postId).update(userLike);
-                              }
-                            });
-                            print(likePost);
-                          });
-                        }
-                      },
-                      onTap: () {
-                        if (likePost == true) {
-                          setState(() {
-                            likePost = false;
-                            _reference
-                                .where('postId', isEqualTo: postId)
-                                .get()
-                                .then((value) {
-                              for (var docs in value.docs) {
-                                Map<String, int> addLike = {
-                                  'like': docs['like'] - 1
-                                };
-                                _reference.doc(postId).update(addLike);
-                                setState(() {
-                                  like = docs['like'];
-                                });
-                                Map<String, dynamic> userDisLike = {
-                                  'likeUser':
-                                      FieldValue.arrayRemove([userName]),
-                                };
-                                _reference.doc(postId).update(userDisLike);
-                              }
-                            });
-                            print(likePost);
-                          });
-                        }
-                      },
-                      child: likePost
-                          ? Container(
-                              child: Icon(
-                                Icons.favorite,
-                                color: Colors.red,
-                              ),
-                            )
-                          : Container(
-                              child: Icon(
-                                Icons.favorite_border,
-                                color: Colors.grey,
-                              ),
-                            ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                  actions: <Widget>[
+                    new Column(
                       children: [
-                        new ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            primary: Colors.black45,
-                            onPrimary: Colors.white,
-                            shadowColor: Colors.black12,
-                          ),
-                          onPressed: () {
-                            //사진 저장
+                        Text(
+                          '$likes',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, color: Colors.black),
+                        ),
+                        new GestureDetector(
+                          onDoubleTap: () async {
+                            if (likePost == false) {
+                              _reference
+                                  .where('postId', isEqualTo: postId)
+                                  .get()
+                                  .then((value) {
+                                for (var docs in value.docs){
+                                  Map<String, int> addLike = {
+                                    'like': docs['like'] + 1
+                                  };
+                                  Map<String, dynamic> userLike = {
+                                    'likeUser': FieldValue.arrayUnion(
+                                        [userName]),
+                                  };
+                                  _reference.doc(postId).update(addLike);
+                                  _reference.doc(postId).update(userLike);
+                                  setState(() {
+                                    likePost = true;
+                                    likes +=1;
+                                  });
+                                }
+                              });
+                            }
+                            print(likePost);
                           },
-                          child: Text('사진 저장하기'),
-                        ),
-                        SizedBox(
-                          width: 20,
-                        ),
-                        new ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              primary: Colors.red[700],
-                              onPrimary: Colors.white,
-                              shadowColor: Colors.black12,
+                          onTap: () {
+                            if (likePost == true) {
+                                _reference
+                                    .where('postId', isEqualTo: postId)
+                                    .get()
+                                    .then((value) {
+                                  for (var docs in value.docs) {
+                                    Map<String, int> addLike = {
+                                      'like': docs['like'] - 1
+                                    };
+                                    Map<String, dynamic> userDisLike = {
+                                      'likeUser':
+                                      FieldValue.arrayRemove([userName]),
+                                    };
+                                    _reference.doc(postId).update(addLike);
+                                    _reference.doc(postId).update(userDisLike);
+                                    setState(() {
+                                      likePost = false;
+                                      likes -=1;
+                                    });
+                                  }
+                                });
+                                print(likePost);
+                            }
+                          },
+                          child: likePost
+                              ? new Container(
+                            child: Icon(
+                              Icons.favorite,
+                              color: Colors.red,
                             ),
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                              likePost = false;
-                            },
-                            child: Text('고양이 더 구경하기')),
+                          )
+                              : new Container(
+                            child: Icon(
+                              Icons.favorite_border,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            new ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                primary: Colors.black45,
+                                onPrimary: Colors.white,
+                                shadowColor: Colors.black12,
+                              ),
+                              onPressed: () {
+                                //사진 저장
+                              },
+                              child: Text('사진 저장하기'),
+                            ),
+                            SizedBox(
+                              width: 20,
+                            ),
+                            new ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  primary: Colors.red[700],
+                                  onPrimary: Colors.white,
+                                  shadowColor: Colors.black12,
+                                ),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text('고양이 더 구경하기')),
+                          ],
+                        ),
                       ],
-                    ),
+                    )
                   ],
-                )
-              ],
-            ),
+                ),
+              );
+            }
           );
         });
   }

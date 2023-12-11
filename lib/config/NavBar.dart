@@ -220,7 +220,6 @@ class _NavBarState extends State<NavBar>{
             title: Text('logout').tr(),
             onTap: () {
               showLogOutCheckDialog();
-              FirebaseAuth.instance.signOut();
             },
           ),
         ],
