@@ -4,6 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:final_prj/config/account.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import '../screen/home_screen.dart';
 import '../screen/login_signUp_screen.dart';
 import 'dart:developer';
@@ -140,8 +142,13 @@ class _NavBarState extends State<NavBar>{
                   onPrimary: Colors.white,
                   shadowColor: Colors.black12,
                 ),
-                onPressed: () {
+                onPressed: () async {
+                  // 기본 로그아웃 처리
                   _authentication.signOut();
+
+                  // 소셜 로그아웃 처리
+                  await signOut();
+
                   Navigator.push(
                     context,
                     //화면 전환
@@ -217,8 +224,19 @@ class _NavBarState extends State<NavBar>{
               showLogOutCheckDialog();
             },
           ),
+          ListTile(
+            leading: Icon(Icons.exit_to_app),
+            title: Text('logouttest').tr(),
+            onTap: () {
+              signOut();
+            },
+          ),
         ],
       ),
     );
   }
+
+  signOut() {}
+
+
 }

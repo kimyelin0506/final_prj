@@ -29,7 +29,6 @@ void main() async {
   await EasyLocalization.ensureInitialized();
 
 
-
   KakaoSdk.init(
     nativeAppKey: '8a2e2681fe7d5ce926ef755864619db3',
     javaScriptAppKey: '03bf351027d9ff04c740f35cad592c45',

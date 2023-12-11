@@ -129,7 +129,7 @@ class _SecondRouteState extends State<SecondRoute> {
                         primary: Colors.grey, // 버튼 배경색
                         padding: EdgeInsets.all(20.0), // 패딩 값
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.0), // 모서리를 덜 둥글게 조절
+                          borderRadius: BorderRadius.circular(10.0),
                         ),
                       ),
                       child: Text(

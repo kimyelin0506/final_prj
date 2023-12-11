@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:final_prj/screen/home_screen.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
+import '../config/auth.dart';
 import '../config/palette.dart';
 import 'dart:convert';
 import 'dart:io';
@@ -13,6 +14,7 @@ import 'package:flutter_naver_login/flutter_naver_login.dart';
 import '../../config/login_platform.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; //userID는 엑스트라데이터이므로
+
 
 
 // class 안에서 변화되는 인스턴스를 적용하기 위해 statefulwidget 사용
@@ -47,7 +49,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
     }
   }
 
-  void signInWithGoogle() async {
+  /*void signInWithGoogle() async {
     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
     if (googleUser != null) {
@@ -60,7 +62,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
         _loginStatus = true;
       });
     }
-  }
+  } */
 
   void signInWithKakao() async {
     try {
@@ -109,7 +111,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
     }
   }
 
-  void signInWithFacebook() async {
+    void signInWithFacebook() async {
     final LoginResult result = await FacebookAuth.instance.login();
 
     if (result.status == LoginStatus.success) {
@@ -156,17 +158,6 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
     });
   }
 
-  Widget _logoutButton() {
-    return ElevatedButton(
-      onPressed: signOut,
-      style: ButtonStyle(
-        backgroundColor: MaterialStateProperty.all(
-          const Color(0xff0165E1),
-        ),
-      ),
-      child: const Text('logout').tr(),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -844,7 +835,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                             ),
                             TextButton.icon(
                               onPressed: () {
-                                // signInWithFacebook();
+                                signInWithFacebook();
                               },
                               style: TextButton.styleFrom(
                                 primary: Colors.white,
