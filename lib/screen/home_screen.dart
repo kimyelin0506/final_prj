@@ -1,16 +1,12 @@
 import 'dart:async';
-import 'dart:ffi';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:final_prj/screen/chat_list_screen.dart';
-import 'package:final_prj/screen/map_screen.dart';
 import 'package:final_prj/screen/payment_screen.dart';
 import 'package:final_prj/screen/upload_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:http/http.dart';
 import '../config/NavBar.dart';
 import '../config/palette.dart';
 
@@ -49,7 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
     getCurrentUser();
   }
 
-  void welcomeMention() {
+  void welcomeMention() { //
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       setState(() {
         _seconds++;

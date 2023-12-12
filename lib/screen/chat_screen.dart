@@ -1,11 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-
 import '../chatting/chat/message.dart';
-import '../chatting/chat/new_massage.dart';
-
+import '../chatting/chat/new_message.dart';
+/*ChatScreen : 기존에 있던 메세지와 새롭게 들어오는 메세지를 보여주는 화면
+* */
 class ChatScreen extends StatefulWidget {
   final String sendUserUid;
   final String rcvUserEmail;
@@ -54,21 +52,6 @@ class _ChatScreenState extends State<ChatScreen> {
       required this.titleUser,
       required this.isSingle,});
 
-  // 채팅방으로 이동할 때마다 실행할것임
-  /*
-  void getCurrentUser() async {
-    try {
-      final user = _authentication.currentUser;
-      if (user != null) {
-        loggedUser = user;
-      }
-    } catch (e) {
-      print(e);
-    }
-  }
-*/
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -102,14 +85,14 @@ class _ChatScreenState extends State<ChatScreen> {
               children: [
                 //listView가 화면내의 모든 공간을 차지 하기 대문에 expanded 사용
                 Expanded(
-                  child: Messages(
+                  child: Messages( //기존에 있던 메세지를 보여주고
                     sendUserUid: sendUserUid,
                     rcvUserEmail: rcvUserEmail,
                     rcvUserUid: rcvUserUid,
                     isSingle: isSingle,
                   ),
                 ),
-                NewMassages(
+                NewMessages( //새롭게 들어오는 메세지를 보여줌
                   sendUserUid: sendUserUid,
                   rcvUserEmail: rcvUserEmail,
                   rcvUserUid: rcvUserUid,

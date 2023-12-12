@@ -1,13 +1,21 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_bubble/chat_bubble.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:get/get.dart';
+
+
+/*ChatBubbles : firebase에서 가져온 메세지 정보를채팅창에 내가 보냈을 경우와
+상대방이 보냈을 경우를 판단하여 채팅메세지를 꾸며줌
+<기능>
+-채팅 구성 : (유저이름),(메세지 내용),(날짜),(좋아요),(프로필 이미지)
+-내가 보냈을 경우/상대방이 보냈을 경우 --> 두가지 형식의 버블챗 구현
+-다른 유저가 보낸 메세지의 경우 : (연속 두번 탭) 메세지 좋아요 기능 구현
+-프로필에서 설정한 각자의 이미지 보여줌
+*/
 
 class ChatBubbles extends StatefulWidget {
-  final String rcvUserName;
-  final String message;
-  final String sendUserName;
+  final String rcvUserName; //받는 유저 이름
+  final String message; //메세지 내용
+  final String sendUserName; //보낸 유저 이름
   final bool isMe; // 내가 보냈을 때를 구별
   final DateTime time;
   final String userUid;
@@ -39,9 +47,10 @@ class _ChatBubblesState extends State<ChatBubbles> {
   DateTime time;
   bool likeMessage = false;
   String userUid;
-  String userProfileImage = '';
-  bool _isProfile = false;
+  String userProfileImage = ''; //유저들의 이미지 링크를 처음 초기화
+  bool _isProfile = false; //파일의 유무를 초기화
 
+  //유저의 프로필 사진이 세팅되어 있을 경우 가져오고, 아닐 경우 기본 이미지 보여줌
   void setUserProfile() async {
     FirebaseFirestore.instance
         .collection('user')
@@ -49,6 +58,7 @@ class _ChatBubblesState extends State<ChatBubbles> {
         .get()
         .then((value) {
       for (var snapshot in value.docs) {
+        //셋팅되어 있는경우
         if(snapshot['profileImageUrl'].toString() != 'No setting Image'){
           setState(() {
             userProfileImage = snapshot['profileImageUrl'];
@@ -63,6 +73,7 @@ class _ChatBubblesState extends State<ChatBubbles> {
     });
   }
 
+  //유저가 이전에 메세지의 좋아요를 눌렀는지 확인하는 함수
   void searchMessage() {
     FirebaseFirestore.instance
         .collection('chat')
@@ -103,7 +114,7 @@ class _ChatBubblesState extends State<ChatBubbles> {
           mainAxisAlignment:
               isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
           children: [
-            if (isMe)
+            if (isMe) //내가 보낸 경우의 채팅형식
               Stack(
                 children:
                 [
@@ -162,7 +173,7 @@ class _ChatBubblesState extends State<ChatBubbles> {
                     ),
                   ],
                 ),
-                  if (_isProfile)
+                  if (_isProfile) //나의 프로필이 세팅되어 있으면
                     Positioned(
                       top: 20,
                       right: 5,
@@ -170,7 +181,7 @@ class _ChatBubblesState extends State<ChatBubbles> {
                         backgroundImage: NetworkImage(userProfileImage),
                       ),
                     ),
-                  if (!_isProfile)
+                  if (!_isProfile) //나의 프로필이 세팅되어 있지 않으면
                     Positioned(
                       top: 20,
                       right: 5,
@@ -179,11 +190,11 @@ class _ChatBubblesState extends State<ChatBubbles> {
                       ),
                     ),]
               ),
-            if (!isMe)
+            if (!isMe) //상대방이 보낸 경우
               Stack(
                 children:
                 [
-                  if (_isProfile)
+                  if (_isProfile) //상대방의 프로필이 설정되어 있는 경우
                     Positioned(
                       top: 20,
                       left: 5,
@@ -191,7 +202,7 @@ class _ChatBubblesState extends State<ChatBubbles> {
                         backgroundImage: NetworkImage(userProfileImage),
                       ),
                     ),
-                  if (!_isProfile)
+                  if (!_isProfile) //상대방의 프로필이 설정되어 있지 않은 경우
                     Positioned(
                       top: 20,
                       left: 5,
@@ -236,14 +247,13 @@ class _ChatBubblesState extends State<ChatBubbles> {
                             ),
                           ),
                         ),
-                        GestureDetector(
+                        GestureDetector( //상대방의 메세지에 좋아요 누르는 기능
                           onDoubleTap: () {
-                            if (!likeMessage) {
+                            if (!likeMessage) { //좋아요가 안되어있으면 파베에 저장
                               setState(() {
                                 Map<String, bool> map = {
                                   'likeMessage': true,
                                 };
-
                                 FirebaseFirestore.instance
                                     .collection('chat')
                                     .where('text', isEqualTo: message)
@@ -265,7 +275,7 @@ class _ChatBubblesState extends State<ChatBubbles> {
                                 });
                               });
                             }
-                            if (likeMessage) {
+                            if (likeMessage) { //좋아요가 되어있으면 파베에서 삭제
                               setState(() {
                                 Map<String, bool> map = {
                                   'likeMessage': false,
@@ -292,7 +302,7 @@ class _ChatBubblesState extends State<ChatBubbles> {
                               });
                             }
                           },
-                          child: likeMessage
+                          child: likeMessage //좋아요의 상태에 따라 보여주는 이모티콘
                               ? Container(
                                   child: Icon(
                                   Icons.favorite,

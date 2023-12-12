@@ -1,10 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_prj/screen/chat_screen.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
 import '../config/palette.dart';
 
+/*ChatListScreen : 사용자들의 개인 톡방을 보여주는 스크린
+<기능>
+-'집사찾기' => 다른 유저의 이메일 주소를 입력하고 옆에 돋보기 아이콘을 누르면
+--> 제대로 입력한 경우/틀린 경우로 나타나며
+--> 제대로 입력한 경우에는 대화하러 가는 버튼이 생성 --> 대화창으로 이동됨
+* */
 class ChatListScreen extends StatefulWidget {
   final user;
   const ChatListScreen({required this.user, super.key});
@@ -18,14 +22,15 @@ class _ChatListScreenState extends State<ChatListScreen> {
   String sendUserUid = '';
   String rcvUserEmail = '';
   String rcvUserUid = '';
-  String titleUser='';
+  String titleUser=''; //찾는 유저의 이름
   bool _isSingleChat = true;
-  var searchUserEmail;
-  final _controller = TextEditingController();
+  var searchUserEmail; //검색한 유저의 이메일
+  final _controller = TextEditingController(); //검색 후 텍스트필드를 초기화하기 위해 선언
   bool _isSearchUser=false;
 
   _ChatListScreenState({required this.user});
 
+  //텍스트필드에서 받아온 값으로 데베에서 유저를 찾아 정보를 가져오는 과정
   Future<void> _searchUser() async {
     _isSearchUser=false;
     print('//////////////$_isSearchUser/////////////');
@@ -43,11 +48,12 @@ class _ChatListScreenState extends State<ChatListScreen> {
       print('//////////////$_isSearchUser/////////////');
     });
   }
+  //사용자를 찾은 경우와 못 찾은 경우를 보여주는 AlertDialog
   Future<Widget> showSearchRes()async{
     FocusScope.of(context).unfocus(); // textField 포커스 삭제
     await _searchUser();
     print('//////////////$_isSearchUser/////////////');
-    if(_isSearchUser == true){
+    if(_isSearchUser == true){ //존재하면
       showDialog(
           context: context,
           barrierDismissible: false, //dialog를 제외한 다른 화면 터치X
@@ -70,7 +76,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                 ],
               ),
               actions: <Widget> [
-                new ElevatedButton(
+                new ElevatedButton( //찾았지만 뒤로가기 버튼
                   style: ElevatedButton.styleFrom(
                     primary: Colors.black45,
                     onPrimary: Colors.white,
@@ -90,7 +96,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                   },
                   child: Text('더 생각해볼게요..'),
                 ),
-                new ElevatedButton(
+                new ElevatedButton( //찾은 유저의 채팅창으로 이동
                   style: ElevatedButton.styleFrom(
                     primary: Colors.red[700],
                     onPrimary: Colors.white,
@@ -102,7 +108,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                       //화면 전환
                       MaterialPageRoute(
                         builder: (context) {
-                          return ChatScreen(
+                          return ChatScreen( //정보를 가지고감
                             sendUserUid: user!.uid.toString(),
                             rcvUserEmail: searchUserEmail,
                             rcvUserUid: rcvUserUid,
@@ -121,7 +127,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
           }
       );
     }
-    if(_isSearchUser == false){
+    if(_isSearchUser == false){ //유저를 찾지 못한 경우
       showDialog(
           context: context,
           barrierDismissible: false, //dialog를 제외한 다른 화면 터치X
@@ -153,7 +159,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                   onPressed: () {
                     print(rcvUserUid);
                     print(titleUser);
-                    setState(() {
+                    setState(() { //리셋
                       _controller.clear();
                       sendUserUid = '';
                       rcvUserEmail = '';
