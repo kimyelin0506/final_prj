@@ -10,6 +10,8 @@ class Post{
   final String postUrl;
   final String user;
   final int like;
+  final double latitude;
+  final double longitude;
 
   const Post({
     required this.description,
@@ -18,6 +20,8 @@ class Post{
     required this.postUrl,
     required this.user,
     required this.like,
+    required this.latitude,
+    required this.longitude,
 });
 
   Map<String, dynamic> toJson() =>{

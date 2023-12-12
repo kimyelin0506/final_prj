@@ -1,10 +1,16 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="final_prj">
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <application
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:label="final_prj">
 
+        <!--Add-->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyAZL0NmoMgeVBJ9JcnEpZ5IQ3Yji2Mf49U">
+        </meta-data>
         <!--Add-->
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"

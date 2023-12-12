@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_prj/screen/chat_screen.dart';
 import 'package:final_prj/screen/home_screen.dart';
+import 'package:final_prj/screen/root_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:final_prj/screen/login_signUp_screen.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
@@ -61,7 +62,7 @@ class MyApp extends StatelessWidget {
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return HomeScreen();
+            return RootScreen();
           }
           return LoginSignupScreen();
         },

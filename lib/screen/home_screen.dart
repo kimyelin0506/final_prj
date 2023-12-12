@@ -4,10 +4,12 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:final_prj/screen/chat_list_screen.dart';
+import 'package:final_prj/screen/map_screen.dart';
 import 'package:final_prj/screen/payment_screen.dart';
 import 'package:final_prj/screen/upload_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart';
 import '../config/NavBar.dart';
 import '../config/palette.dart';
@@ -28,6 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int _seconds = 0;
   File? img;
   final String _userEmail = FirebaseAuth.instance.currentUser!.email.toString();
+
 
   void getCurrentUser() async {
     try {
@@ -147,54 +150,57 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  AppBar AppBarStyle() {
+    return AppBar(
+      backgroundColor: Colors.black,
+      title: Text('안서s Cat!'),
+      centerTitle: true,
+      actions: [
+        IconButton(
+          //고양이 후원 아이콘
+          icon: Icon(Icons.monetization_on),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) {
+                  return FirstRoute(); //요건 payment_screen.dart에 위치함
+                },
+              ),
+            );
+          },
+        ),
+        IconButton(
+          icon: Icon(Icons.add_a_photo),
+          onPressed: () {
+            takeImage(context);
+          },
+        ),
+        IconButton(
+          icon: Icon(Icons.chat),
+          onPressed: () {
+            Navigator.push(
+              context,
+              //화면 전환
+              MaterialPageRoute(
+                builder: (context) {
+                  return ChatListScreen(
+                    user: FirebaseAuth.instance.currentUser,
+                  );
+                },
+              ),
+            );
+          },
+        ),
+      ],
+    );
+  }
   @override
   Widget build(BuildContext context) {
     welcomeMention();
     return Scaffold(
       drawer: NavBar(),
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        title: Text('안서s Cat!'),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            //고양이 후원 아이콘
-            icon: Icon(Icons.monetization_on),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) {
-                    return FirstRoute(); //요건 payment_screen.dart에 위치함
-                  },
-                ),
-              );
-            },
-          ),
-          IconButton(
-            icon: Icon(Icons.add_a_photo),
-            onPressed: () {
-              takeImage(context);
-            },
-          ),
-          IconButton(
-            icon: Icon(Icons.chat),
-            onPressed: () {
-              Navigator.push(
-                context,
-                //화면 전환
-                MaterialPageRoute(
-                  builder: (context) {
-                    return ChatListScreen(
-                      user: FirebaseAuth.instance.currentUser,
-                    );
-                  },
-                ),
-              );
-            },
-          ),
-        ],
-      ),
+      appBar: AppBarStyle(),
       body: Stack(
         children: [
           //환영 위젯
@@ -274,8 +280,6 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-
-
 
   void showPost(String userName, String contents
       , DateTime time, String ImageUrl, int likes, String postId, bool likePost) async {
@@ -457,8 +461,12 @@ class _HomeScreenState extends State<HomeScreen> {
             children: <Widget>[
               SimpleDialogOption(
                 child: Text('글 올리기'),
-                onPressed: () => Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => UploadScreen())),
+                onPressed: () async {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context){
+                        return UploadScreen();
+                      }));
+                }
               ),
               SimpleDialogOption(
                 child: Text('취소'),

@@ -10,8 +10,10 @@ import 'package:flutter/material.dart';
 import 'package:final_prj/resources/add_data.dart';
 
 import 'package:flutter/services.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:final_prj/resources/add_data.dart';
 
@@ -27,12 +29,19 @@ class UploadScreen extends StatefulWidget{
 class _UploadState extends State<UploadScreen> {
   Uint8List? _file;
   bool _isLoading = false;
-
+  var gps;
   int num=0;
   final textEditingController = TextEditingController();  //텍스트필드를 수정할때마다 값이 업데이트 & 컨트롤러는 해당 listener에게 알림
   String fromWhere='';
   final _authentication = FirebaseAuth.instance;
 
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    gps = getCurrentLocation();
+    super.initState();
+  }
 
   //위젯이 dispose될때 textEditingController도 dispose 되도록 설정
   @override
@@ -43,7 +52,6 @@ class _UploadState extends State<UploadScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     //세로로만 찍을 수 있게
     SystemChrome.setPreferredOrientations(
         [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
@@ -111,6 +119,14 @@ class _UploadState extends State<UploadScreen> {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(content)));
   }
 
+  Future<Position> getCurrentLocation() async {
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+
+    return position;
+  }
+
+
   //upload 되었나?
   void postImage() async{
     setState(() {
@@ -118,7 +134,11 @@ class _UploadState extends State<UploadScreen> {
     });
 
     try{
-      String res = await ImageStoreMethods().uploadPost(textEditingController.text, _file!, _authentication.currentUser!.email!,);
+      String res = await ImageStoreMethods()
+          .uploadPost(textEditingController.text, _file!,
+        _authentication.currentUser!.email!
+          ,gps.longitude ,gps.latitude
+      );
       if(res == 'success'){
         showSnackBar('posted', context);
        setState((){
@@ -145,11 +165,116 @@ class _UploadState extends State<UploadScreen> {
    print('no image selected');
   }
 
+  void selectLocation(){
+    showDialog(
+        context: context,
+        builder: (context){
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+            shadowColor: Colors.black,
+            title:
+            new Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                new Text(
+                  '고양이 위치 저장하기',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+            content:   new Text('고양이를 본 위치를 저장해 주세요',
+                style: TextStyle(fontSize: 15, color: Colors.black)),
+            actions: <Widget>[
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  new ElevatedButton(
+                    onPressed: ()async {
+                      gps = await getCurrentLocation();
+                      Navigator.of(context).pop();
+                    },
+                    child: Text(
+                      '현재 위치',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.black),
+                    ),
+                  ),
+                  SizedBox(width: 15,),
+                  new ElevatedButton(
+                    onPressed: () {
+                      mapDialog();
+                    },
+                    child: Text(
+                      '위치 지정',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.black),
+                    ),
+                  ),
+                ],
+              )
+            ],
+          );
+        });
+  }
+
+
+  mapDialog(){
+    return showDialog(
+        context: context,
+        builder: (context){
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+            shadowColor: Colors.black,
+            title:
+            new Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                new Text(
+                  '고양이 위치 지정하기',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+            content: selectLocationWithMap(),
+            actions: <Widget>[
+              new ElevatedButton(
+                onPressed: () {
+
+                },
+                child: Text(
+                  '여기에요!',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, color: Colors.black),
+                ),
+              )
+            ],
+          );
+        });
+  }
+  GoogleMap selectLocationWithMap(){
+    CameraPosition _select =CameraPosition(target: LatLng( gps.latitude,gps.longitude));
+    return GoogleMap(
+      initialCameraPosition: _select,
+      myLocationEnabled: true,
+      myLocationButtonEnabled: true,
+    );
+  }
   //이미지&게시글 보여주기
   Widget showImage(){
     return SingleChildScrollView(
       child: Column(
         children: [
+          TextButton(
+            onPressed: (){
+              selectLocation();
+              },
+              child: Text('고양이 위치 저장하기'),
+          ),
           Container(
             color: const Color(0xffd0cece),
             width: MediaQuery.of(context).size.width,
@@ -179,8 +304,6 @@ class _UploadState extends State<UploadScreen> {
 
 
   }
-
-
 
   // 하나의 게시글 해당
   Widget uploadPost() {

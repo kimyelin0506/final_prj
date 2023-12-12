@@ -1,92 +1,46 @@
-
-import 'package:easy_localization/easy_localization.dart';
-import 'package:final_prj/screen/profile_screen.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'home_screen.dart';
-import 'locate_screen.dart';
+import 'map_screen.dart';
 
-
-//전체 큰틀인 RootScreen
-//이 안에 homescreen, profileScreen, LocationScreen 이 위치해 있음
-class RootScreen extends StatefulWidget{
-  const RootScreen({Key? key}):super(key: key);
+class RootScreen extends StatefulWidget {
+  const RootScreen({super.key});
 
   @override
   State<RootScreen> createState() => _RootScreenState();
 }
 
-class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin{
-  TabController? controller;
+class _RootScreenState extends State<RootScreen> {
+  int _selectedIndex = 0;
+  final List<Widget> _widgets = <Widget>[
+    HomeScreen(),
+    MapScreen(),
+  ];
 
-  @override
-  void initState(){
-    super.initState();
-
-    controller = TabController(length: 3, vsync: this);
-    controller!.addListener(tabListener);
-  }
-  tabListener(){
-    setState(() {});
-  }
-  @override
-  dispose(){
-    controller!.removeListener(tabListener);
-    super.dispose();
+  void _onItemTapped(int index){
+    setState(() {
+      _selectedIndex = index;
+    });
   }
 
+  BottomNavigationBar renderBottomNavigation() {
+    return BottomNavigationBar(items: [
+      BottomNavigationBarItem(icon: Icon(Icons.home), label: '커뮤니티'),
+      BottomNavigationBarItem(icon: Icon(Icons.map_outlined), label: '고양이 지도'),
+    ],
+      currentIndex: _selectedIndex,
+      selectedItemColor: Colors.black,
+      onTap: _onItemTapped,
+    );
+  }
+
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return Scaffold(
-      body: TabBarView(
-        controller: controller,
-        children: renderChildren(),
+      body: SafeArea(
+        child: _widgets.elementAt(_selectedIndex),
       ),
       bottomNavigationBar: renderBottomNavigation(),
     );
-  }
-
-  //bottomNavigationBar
-  BottomNavigationBar renderBottomNavigation(){
-    return BottomNavigationBar(
-        //showSelectedLabels: false, //글자 없애기
-        //showUnselectedLabels: false,
-        currentIndex: controller!.index,
-        onTap: (int index){
-          setState(() {
-            controller!.animateTo(index);
-          });
-        },
-
-        items: [
-          BottomNavigationBarItem(
-              icon: Icon(
-                Icons.home_outlined,
-              ),
-              label: tr('Home')
-          ),
-          BottomNavigationBarItem(
-              icon: Icon(
-                Icons.pin_drop,
-              ),
-              label: tr('위치')
-          ),
-          BottomNavigationBarItem(
-              icon: Icon(
-                  Icons.account_circle_outlined
-              ),
-            label: tr('프로필')
-          )
-        ]
-    );
-  }
-
-  List<Widget> renderChildren(){
-    return [
-      HomeScreen(),   //홈화면 (피드보이는 곳)
-      LocationScreen(),  //설정
-      ProfileScreen(),  //프로필
-    ];
   }
 }

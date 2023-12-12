@@ -4,7 +4,9 @@ plugins {
     id "dev.flutter.flutter-gradle-plugin"
     //add
     id 'com.google.gms.google-services'
-  }
+    //id 'com.google.gms.google-services' version '4.3.15' apply false
+
+}
 
 
 def localProperties = new Properties()
@@ -28,7 +30,7 @@ if (flutterVersionName == null) {
 
 android {
     namespace "com.example.final_prj2"
-    compileSdkVersion flutter.compileSdkVersion
+    compileSdkVersion 33 //flutter.compileSdkVersion
     ndkVersion flutter.ndkVersion
 
     compileOptions {
