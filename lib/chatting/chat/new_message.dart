@@ -1,36 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 //send 버튼을 누를 때 baridation 을 실행하기 위해서 statefull
-class NewMassages extends StatefulWidget {
+/*NewMessages : 텍스트필드에서 값을 받아 파베에 새로운 메세지를 등록
+<기능>
+-파베에 collection(chat) 하위 문서로 새로운 메세지들을 등록
+-구성 : (메세지 내용),(보낸 유저 Uid),(보낸 유저 이메일),(받는 유저 이름),(받는 유저 이메일),
+(받는 유저 Uid), (보낸 시간),(좋아요 유무)
+* */
+class NewMessages extends StatefulWidget {
   final String sendUserUid;
   final String rcvUserEmail;
   final String rcvUserUid;
 
-  const NewMassages(
+  const NewMessages(
       {required this.sendUserUid,
-      required this.rcvUserEmail,
-      required this.rcvUserUid});
+        required this.rcvUserEmail,
+        required this.rcvUserUid});
 
   @override
-  State<NewMassages> createState() => _NewMassagesState(
+  State<NewMessages> createState() => _NewMessagesState(
       sendUserUid: sendUserUid,
       rcvUserEmail: rcvUserEmail,
       rcvUserUid: rcvUserUid);
 }
 
-class _NewMassagesState extends State<NewMassages> {
+class _NewMessagesState extends State<NewMessages> {
   final String sendUserUid;
   final String rcvUserEmail;
   final String rcvUserUid;
   var _userEnterMessage = '';
   final _controller = TextEditingController();
 
-  _NewMassagesState(
+  _NewMessagesState(
       {required this.sendUserUid,
-      required this.rcvUserEmail,
-      required this.rcvUserUid});
+        required this.rcvUserEmail,
+        required this.rcvUserUid});
 
   void _sendMessage() async {
     FocusScope.of(context).unfocus(); // textField 포커스 삭제
@@ -41,8 +46,8 @@ class _NewMassagesState extends State<NewMassages> {
         .get();
     final rcvUserData = await FirebaseFirestore.instance.collection('user').doc(rcvUserUid).get();
 
-    //만약 채팅방이 안만들어져있다면
-     await FirebaseFirestore.instance.collection('chat').add({
+    //새로운 메세지 생성
+    await FirebaseFirestore.instance.collection('chat').add({
       'text': _userEnterMessage,
       'time': Timestamp.now(),
       'sendUserUid': sendUserUid,
