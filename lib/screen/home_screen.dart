@@ -47,14 +47,18 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void welcomeMention() { //
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      setState(() {
-        _seconds++;
-      });
+      if(this.mounted){
+        setState(() {
+          _seconds++;
+        });
+      }
     });
     if (_seconds >= 5) {
-      setState(() {
-        _startApp = true;
-      });
+     if(this.mounted){
+       setState(() {
+         _startApp = true;
+       });
+     }
     }
   }
 
