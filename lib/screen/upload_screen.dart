@@ -1,21 +1,15 @@
-import 'dart:io';
-
-import 'package:bootpay/model/item.dart';
-import 'package:bootpay/model/user.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:final_prj/screen/home_screen.dart';
+import 'package:final_prj/screen/root_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:final_prj/resources/add_data.dart';
 
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:final_prj/resources/add_data.dart';
+import 'package:location/location.dart';
 
 
 //사용자가 게시물 올릴때 작성하는 화면
@@ -29,17 +23,19 @@ class UploadScreen extends StatefulWidget{
 class _UploadState extends State<UploadScreen> {
   Uint8List? _file;
   bool _isLoading = false;
-  var gps;
+  double _longitude=0;
+  double _latitude=0;
   int num=0;
   final textEditingController = TextEditingController();  //텍스트필드를 수정할때마다 값이 업데이트 & 컨트롤러는 해당 listener에게 알림
   String fromWhere='';
   final _authentication = FirebaseAuth.instance;
+  var _controller;
 
 
   @override
   void initState() {
     // TODO: implement initState
-    gps = getCurrentLocation();
+    _currentLocation();
     super.initState();
   }
 
@@ -47,6 +43,7 @@ class _UploadState extends State<UploadScreen> {
   @override
   void dispose(){
     textEditingController.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
@@ -66,7 +63,7 @@ class _UploadState extends State<UploadScreen> {
           onPressed: (){
             postImage();
             num++;
-            Navigator.push(context, MaterialPageRoute(builder: (context)=> HomeScreen()));
+            Navigator.push(context, MaterialPageRoute(builder: (context)=> RootScreen()));
             },
         ),
       ) ,
@@ -119,11 +116,17 @@ class _UploadState extends State<UploadScreen> {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(content)));
   }
 
-  Future<Position> getCurrentLocation() async {
-    Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
+  void _currentLocation() async {
+    //GoogleMapController controller = await _controller.future;
+    Location location = Location();
+    var currentLocation = await location.getLocation();
+    if(this.mounted){
+      setState(() {
+        _latitude = currentLocation.latitude!;
+        _longitude =currentLocation.longitude!;
+      });
+    }
 
-    return position;
   }
 
 
@@ -135,9 +138,10 @@ class _UploadState extends State<UploadScreen> {
 
     try{
       String res = await ImageStoreMethods()
-          .uploadPost(textEditingController.text, _file!,
-        _authentication.currentUser!.email!
-         // ,gps.longitude ,gps.latitude
+          .uploadPost(
+          textEditingController.text, _file!,
+          _authentication.currentUser!.email!,
+          _longitude ,_latitude
       );
       if(res == 'success'){
         showSnackBar('posted', context);
@@ -192,8 +196,10 @@ class _UploadState extends State<UploadScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   new ElevatedButton(
-                    onPressed: ()async {
-                      gps = await getCurrentLocation();
+                    onPressed: () {
+                      //_currentLocation();
+                      print(_longitude );
+                      print(_latitude);
                       Navigator.of(context).pop();
                     },
                     child: Text(
@@ -240,7 +246,7 @@ class _UploadState extends State<UploadScreen> {
                 ),
               ],
             ),
-            content: selectLocationWithMap(),
+            content: Container(child: selectLocationWithMap(),),
             actions: <Widget>[
               new ElevatedButton(
                 onPressed: () {
@@ -257,7 +263,7 @@ class _UploadState extends State<UploadScreen> {
         });
   }
   GoogleMap selectLocationWithMap(){
-    CameraPosition _select =CameraPosition(target: LatLng( gps.latitude,gps.longitude));
+    CameraPosition _select =CameraPosition(target: LatLng(_latitude, _longitude), zoom: 15);
     return GoogleMap(
       initialCameraPosition: _select,
       myLocationEnabled: true,

@@ -690,13 +690,6 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                       });
                       if (isSignupScreen) {
                         //이미지 등록 메세지
-                        setState(() {
-                          showSpinner = false;
-                          SnackBar(
-                            content: Text('이미지 선택해주세요').tr(),
-                            backgroundColor: Colors.blue,
-                          );
-                        });
                         _tryValidation();
                         // try catch를 사용하여 오류가 났을 경우 앱이 다운되거나 멈추는 것을 방지하고 사용자에게 이유를 설명함
                         try {
