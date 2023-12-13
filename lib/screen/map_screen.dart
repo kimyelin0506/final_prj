@@ -17,6 +17,7 @@ class _MapScreenState extends State<MapScreen> {
   final _markers = <Marker>{};
   final _cats = [
     {
+      //"postURL" : String,
       "postUserName": "예린",
       "latitude": 36.832225,
       "longitude": 127.177981,

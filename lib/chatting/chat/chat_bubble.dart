@@ -52,7 +52,7 @@ class _ChatBubblesState extends State<ChatBubbles> {
 
   //유저의 프로필 사진이 세팅되어 있을 경우 가져오고, 아닐 경우 기본 이미지 보여줌
   void setUserProfile() async {
-    FirebaseFirestore.instance
+   await FirebaseFirestore.instance
         .collection('user')
         .where('userUid', isEqualTo: userUid)
         .get()
@@ -60,10 +60,12 @@ class _ChatBubblesState extends State<ChatBubbles> {
       for (var snapshot in value.docs) {
         //셋팅되어 있는경우
         if(snapshot['profileImageUrl'].toString() != 'No setting Image'){
-          setState(() {
-            userProfileImage = snapshot['profileImageUrl'];
-            _isProfile = true;
-          });
+         if(this.mounted){
+           setState(() {
+             userProfileImage = snapshot['profileImageUrl'];
+             _isProfile = true;
+           });
+         }
         }
           print('---------Profile--------');
           print(snapshot['profileImageUrl']);
@@ -74,17 +76,19 @@ class _ChatBubblesState extends State<ChatBubbles> {
   }
 
   //유저가 이전에 메세지의 좋아요를 눌렀는지 확인하는 함수
-  void searchMessage() {
-    FirebaseFirestore.instance
+  void searchMessage() async {
+    await FirebaseFirestore.instance
         .collection('chat')
         .where('text', isEqualTo: message)
         .get()
         .then((value) {
       print('------likemessage ------');
       for (var docSnapshot in value.docs) {
+      if(this.mounted){
         setState(() {
           likeMessage = docSnapshot['likeMessage'];
         });
+      }
       }
       onError:
       (e) => print("Error completing: $e");
@@ -102,9 +106,15 @@ class _ChatBubblesState extends State<ChatBubbles> {
 
   @override
   void initState() {
+      searchMessage();
+      setUserProfile();
     super.initState();
+  }
+  @override
+  void dispose() {
+    // TODO: implement dispose
     searchMessage();
-    setUserProfile();
+    super.dispose();
   }
 
   @override
