@@ -2,13 +2,14 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:final_prj/screen/home_screen.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
+import '../config/auth.dart';
 import '../config/palette.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
+//import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:flutter_naver_login/flutter_naver_login.dart';
 import '../../config/login_platform.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -29,6 +30,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
   //소셜 로그인
   bool _loginStatus = false; //로그인 상태
   LoginPlatform _loginPlatform = LoginPlatform.none;
+
   //일반 로그인
   bool isSignupScreen = true; // login창 선택인지  signup 창 선택인지 판단하는 변수
   final _formKey = GlobalKey<FormState>(); //form에서 사용하는 전역키
@@ -47,24 +49,35 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
       _formKey.currentState!.save();
     }
   }
+
   //구글 파베연동 완료
   Future<void> signInWithGoogle() async {
     try {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
       if (googleUser != null) {
-        final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+        final GoogleSignInAuthentication googleAuth = await googleUser
+            .authentication;
         final AuthCredential credential = GoogleAuthProvider.credential(
           accessToken: googleAuth.accessToken,
           idToken: googleAuth.idToken,
         );
+        final UserCredential authResult = await FirebaseAuth.instance
+            .signInWithCredential(credential);
+        final User? user = authResult.user;
 
-        await FirebaseAuth.instance.signInWithCredential(credential);
+        // 사용자 정보 변수
+        String userName = googleUser.displayName ?? '';
+        String userEmail = googleUser.email ?? '';
 
-        print('Google 로그인 성공!');
-        print('User ID: ${FirebaseAuth.instance.currentUser?.uid}');
-        print('Display Name: ${FirebaseAuth.instance.currentUser?.displayName}');
-        print('Email: ${FirebaseAuth.instance.currentUser?.email}');
+        // Firebase에 유저 정보 저장
+        await FirebaseFirestore.instance.collection('user').doc(user?.uid).set({
+          'userName': userName,
+          'email': userEmail,
+          'userUid': user?.uid,
+          'profileImageUrl': 'No setting Image',
+          'facat': '',
+        });
 
         setState(() {
           _loginPlatform = LoginPlatform.google;
@@ -72,11 +85,13 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
         });
       }
     } catch (e) {
-      print('Google 로그인 실패: $e');
+      print('구글 로그인 실패: $e');
     }
   }
-  //카카오는 파베에서 제공x
-  void signInWithKakao() async {
+
+
+  //카카오는 파베에서 제공x, 구글과 코드 겹침 이슈로 주석처리
+  /*void signInWithKakao() async {
     try {
       bool isInstalled = await isKakaoTalkInstalled();
 
@@ -103,7 +118,8 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
     } catch (error) {
       print('카카오톡으로 로그인 실패: $error');
     }
-  }
+  } */
+
   //네이버는 파베에서 제공x
   void signInWithNaver() async {
     final NaverLoginResult result = await FlutterNaverLogin.logIn();
@@ -122,6 +138,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
       print('Naver login failed. Status: ${result.status}');
     }
   }
+
   //페이스북 파베연동 완료
   Future<void> signInWithFacebook() async {
     try {
@@ -143,6 +160,19 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
         final profileInfo = json.decode(response.body);
         print(profileInfo.toString());
 
+        // 사용자 정보 변수
+        String userName = profileInfo['name'] ?? '';
+        String userEmail = profileInfo['email'] ?? '';
+
+        // Firebase에 유저 정보 저장
+        await FirebaseFirestore.instance.collection('user').doc(FirebaseAuth.instance.currentUser?.uid).set({
+          'userName': userName,
+          'email': userEmail,
+          'userUid': FirebaseAuth.instance.currentUser?.uid,
+          'profileImageUrl': 'No setting Image',
+          'facat': '',
+        });
+
         setState(() {
           _loginPlatform = LoginPlatform.facebook;
           _loginStatus = true;
@@ -155,14 +185,15 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
     }
   }
 
+
   signOut() async {
     switch (_loginPlatform) {
       case LoginPlatform.google:
         await GoogleSignIn().signOut();
         break;
-      case LoginPlatform.kakao:
+    /*case LoginPlatform.kakao:
         await UserApi.instance.logout();
-        break;
+        break;*/
       case LoginPlatform.naver:
         await FlutterNaverLogin.logOut();
         break;
@@ -189,7 +220,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
       body: ModalProgressHUD(
         inAsyncCall: showSpinner, //전송버튼을 누르면 스피너가 true로 실행되어야함
         child: GestureDetector(
-          onTap: (){ //다른 곳을 눌렀을 떄 키보드 내려감
+          onTap: () { //다른 곳을 눌렀을 떄 키보드 내려감
             FocusScope.of(context).unfocus();
           },
           child: Stack( //세개의 position
@@ -269,7 +300,10 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                   padding: EdgeInsets.all(20.0),
                   //요소들을 Container안에 위아래양옆 간격을 줌
                   height: isSignupScreen ? 250.0 : 190.0,
-                  width: MediaQuery.of(context).size.width - 40,
+                  width: MediaQuery
+                      .of(context)
+                      .size
+                      .width - 40,
                   // 각 디바이스의 실제 넓이 불러옴 - 40 이유 : 전체크기에서 -20-20
                   margin: EdgeInsets.symmetric(horizontal: 20.0),
                   //대칭적으로 수평(horizontal), 수직(vertical) 기준으로 여백 지정 가능
@@ -352,7 +386,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                                   ),
                                   if (isSignupScreen)
                                     Container(
-                                      margin: EdgeInsets.fromLTRB(0,3,35,0),
+                                      margin: EdgeInsets.fromLTRB(0, 3, 35, 0),
                                       height: 2,
                                       width: 55,
                                       color: Colors.orange,
@@ -374,17 +408,17 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                                     //이메일용 키보드 타입 불러오기
                                     keyboardType: TextInputType.emailAddress,
                                     key: ValueKey(1),
-                                    validator: (value){
-                                      if(value!.isEmpty || value.length <4){
+                                    validator: (value) {
+                                      if (value!.isEmpty || value.length < 4) {
                                         return tr('4글자 이상 입력해 주세요');
                                       }
                                       return null;
                                     },
                                     //사용자가 입력한 value값 저장하는 메소드
-                                    onSaved: (value){
+                                    onSaved: (value) {
                                       userEmail = value!;
                                     },
-                                    onChanged: (value){
+                                    onChanged: (value) {
                                       userEmail = value;
                                     },
                                     //여러개의 컨트롤러를 사용하기 쉬움
@@ -426,16 +460,17 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                                     //비밀번호 가리기
                                     obscureText: true,
                                     key: ValueKey(2),
-                                    validator: (value){
-                                      if(value!.isEmpty || value.length < 6){  //파이어베이스 최소 길이
+                                    validator: (value) {
+                                      if (value!.isEmpty ||
+                                          value.length < 6) { //파이어베이스 최소 길이
                                         return tr('비밀번호는 최소 6글자 이상이여야 합니다');
                                       }
                                       return null;
                                     },
-                                    onSaved: (value){
+                                    onSaved: (value) {
                                       userPassWord = value!;
                                     },
-                                    onChanged: (value){
+                                    onChanged: (value) {
                                       userPassWord = value;
                                     },
                                     //여러개의 컨트롤러를 사용하기 쉬움
@@ -484,16 +519,16 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                                 children: [
                                   TextFormField(
                                     key: ValueKey(3),
-                                    validator: (value){ //유효성 검사
-                                      if(value!.isEmpty || value.length < 4){
+                                    validator: (value) { //유효성 검사
+                                      if (value!.isEmpty || value.length < 4) {
                                         return tr('4글자 이상 입력해 주세요');
                                       }
                                       return null;
                                     },
-                                    onSaved: (value){
+                                    onSaved: (value) {
                                       userName = value!;
                                     },
-                                    onChanged: (value){
+                                    onChanged: (value) {
                                       userName = value;
                                     },
                                     //여러개의 컨트롤러를 사용하기 쉬움
@@ -534,16 +569,17 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                                   TextFormField(
                                     keyboardType: TextInputType.emailAddress,
                                     key: ValueKey(4),
-                                    validator: (value){
-                                      if(value!.isEmpty || !value.contains('@')){
+                                    validator: (value) {
+                                      if (value!.isEmpty ||
+                                          !value.contains('@')) {
                                         return tr('이메일의 형식으로 입력해 주세요');
                                       }
                                       return null;
                                     },
-                                    onSaved: (value){
+                                    onSaved: (value) {
                                       userEmail = value!;
                                     },
-                                    onChanged: (value){
+                                    onChanged: (value) {
                                       userEmail = value;
                                     },
                                     //여러개의 컨트롤러를 사용하기 쉬움
@@ -584,16 +620,17 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                                   TextFormField(
                                     obscureText: true,
                                     key: ValueKey(5),
-                                    validator: (value){
-                                      if(value!.isEmpty || value.length < 6){  //파이어베이스 최소 길이
+                                    validator: (value) {
+                                      if (value!.isEmpty ||
+                                          value.length < 6) { //파이어베이스 최소 길이
                                         return '비밀번호는 최소 6글자 이상이여야 합니다';
                                       }
                                       return null;
                                     },
-                                    onSaved: (value){
+                                    onSaved: (value) {
                                       userPassWord = value!;
                                     },
-                                    onChanged: (value){
+                                    onChanged: (value) {
                                       userPassWord = value;
                                     },
                                     //여러개의 컨트롤러를 사용하기 쉬움
@@ -650,7 +687,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                       setState(() {
                         showSpinner = true; //spinner end
                       });
-                      if(isSignupScreen){
+                      if (isSignupScreen) {
                         //이미지 등록 메세지
                         setState(() {
                           showSpinner = false;
@@ -661,8 +698,9 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                         });
                         _tryValidation();
                         // try catch를 사용하여 오류가 났을 경우 앱이 다운되거나 멈추는 것을 방지하고 사용자에게 이유를 설명함
-                        try{
-                          final newUser = await _authentication.createUserWithEmailAndPassword(
+                        try {
+                          final newUser = await _authentication
+                              .createUserWithEmailAndPassword(
                             email: userEmail,
                             password: userPassWord,
                           );
@@ -675,18 +713,18 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                           //data의 형태는 map
                           await FirebaseFirestore.instance.collection('user')
                               .doc(newUser.user!.uid).set({
-                            'userName' : userName,
-                            'email' : userEmail,
-                            'userUid' : newUser.user!.uid,
-                            'profileImageUrl' : 'No setting Image',
-                            'facat' : ''
+                            'userName': userName,
+                            'email': userEmail,
+                            'userUid': newUser.user!.uid,
+                            'profileImageUrl': 'No setting Image',
+                            'facat': ''
                           });
                           setState(() {
                             showSpinner = false; //spinner end
                           });
-                        }catch(e){
+                        } catch (e) {
                           print(e);
-                          if(mounted) {
+                          if (mounted) {
                             //async 방식으로 사용자 입력을 처리하는데 바뀌는 위젯트리로 인해 다른 context를 사용하여
                             //호출이되는 문제를 해결하기 위해 mounted사용하면 위젯이 사라지는 순간 조건이 false가됨
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -702,9 +740,9 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                         }
                       }
                       //loginScreen
-                      if(!isSignupScreen){
+                      if (!isSignupScreen) {
                         _tryValidation();
-                        try{
+                        try {
                           final newUser =
                           await _authentication.signInWithEmailAndPassword(
                             email: userEmail,
@@ -725,7 +763,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                               showSpinner = false; //spinner end
                             });
                           }
-                        }catch(e){
+                        } catch (e) {
                           print(e);
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
@@ -760,7 +798,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                                 color: Colors.black.withOpacity(0.3),
                                 spreadRadius: 1,
                                 blurRadius: 1,
-                                offset: Offset(0,1)//한 지점에서 다른 지점에서의 거리
+                                offset: Offset(0, 1) //한 지점에서 다른 지점에서의 거리
                             ),
                           ],
                         ),
@@ -775,105 +813,111 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
               ),
               // 소셜 로그인
               AnimatedPositioned(
-                    duration: Duration(milliseconds: 500),
-                    curve: Curves.easeIn,
-                    top: isSignupScreen
-                        ? MediaQuery.of(context).size.height - 180
-                        : MediaQuery.of(context).size.height - 200,
-                    right: 0,
-                    left: 0,
-                    child: Column(
+                duration: Duration(milliseconds: 500),
+                curve: Curves.easeIn,
+                top: isSignupScreen
+                    ? MediaQuery
+                    .of(context)
+                    .size
+                    .height - 180
+                    : MediaQuery
+                    .of(context)
+                    .size
+                    .height - 200,
+                right: 0,
+                left: 0,
+                child: Column(
+                  children: [
+                    Text(isSignupScreen
+                        ? 'or Sign Up With'
+                        : 'or Sign in With'),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(isSignupScreen
-                            ? 'or Sign Up With'
-                            : 'or Sign in With'),
+                        TextButton.icon(
+                          onPressed: () {
+                            signInWithGoogle();
+                          },
+                          style: TextButton.styleFrom(
+                            primary: Colors.white,
+                            minimumSize: Size(155, 40),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            backgroundColor: Palette.googleColor,
+                          ),
+                          icon: Icon(Icons.add),
+                          label: Text('Google'),
+                        ),
                         SizedBox(
-                          height: 10,
+                          height: 5,
+                          width: 10,
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            TextButton.icon(
-                              onPressed: () {
-                                signInWithGoogle();
-                              },
-                              style: TextButton.styleFrom(
-                                primary: Colors.white,
-                                minimumSize: Size(155, 40),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                backgroundColor: Palette.googleColor,
-                              ),
-                              icon: Icon(Icons.add),
-                              label: Text('Google'),
+                        TextButton.icon(
+                          onPressed: () {
+                            //signInWithKakao();
+                          },
+                          style: TextButton.styleFrom(
+                            primary: Colors.white,
+                            minimumSize: Size(155, 40),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
                             ),
-                            SizedBox(
-                              height: 5,
-                              width: 10,
-                            ),
-                            TextButton.icon(
-                              onPressed: () {
-                                signInWithKakao();
-                              },
-                              style: TextButton.styleFrom(
-                                primary: Colors.white,
-                                minimumSize: Size(155, 40),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                backgroundColor: Palette.googleColor,
-                              ),
-                              icon: Icon(Icons.add),
-                              label: Text('Kakao'),
-                            ),
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(
-                              height: 10,
-                            ),
-                            TextButton.icon(
-                              onPressed: () {
-                                signInWithNaver();
-                              },
-                              style: TextButton.styleFrom(
-                                primary: Colors.white,
-                                minimumSize: Size(155, 40),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                backgroundColor: Palette.googleColor,
-                              ),
-                              icon: Icon(Icons.add),
-                              label: Text('Naver'),
-                            ),
-                            SizedBox(
-                              height: 5,
-                              width: 10,
-                            ),
-                            TextButton.icon(
-                              onPressed: () {
-                                signInWithFacebook();
-                              },
-                              style: TextButton.styleFrom(
-                                primary: Colors.white,
-                                minimumSize: Size(155, 40),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                backgroundColor: Palette.googleColor,
-                              ),
-                              icon: Icon(Icons.add),
-                              label: Text('FaceBook'),
-                            )
-                          ],
+                            backgroundColor: Palette.googleColor,
+                          ),
+                          icon: Icon(Icons.add),
+                          label: Text('Kakao'),
                         ),
                       ],
                     ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          height: 10,
+                        ),
+                        TextButton.icon(
+                          onPressed: () {
+                            signInWithNaver();
+                          },
+                          style: TextButton.styleFrom(
+                            primary: Colors.white,
+                            minimumSize: Size(155, 40),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            backgroundColor: Palette.googleColor,
+                          ),
+                          icon: Icon(Icons.add),
+                          label: Text('Naver'),
+                        ),
+                        SizedBox(
+                          height: 5,
+                          width: 10,
+                        ),
+                        TextButton.icon(
+                          onPressed: () {
+                            signInWithFacebook();
+                          },
+                          style: TextButton.styleFrom(
+                            primary: Colors.white,
+                            minimumSize: Size(155, 40),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            backgroundColor: Palette.googleColor,
+                          ),
+                          icon: Icon(Icons.add),
+                          label: Text('FaceBook'),
+                        )
+                      ],
+                    ),
+                  ],
                 ),
+              ),
             ],
           ),
         ),
@@ -881,6 +925,3 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
     );
   }
 }
-/*
-
- */

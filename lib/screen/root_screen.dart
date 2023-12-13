@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'home_screen.dart';
-import 'map_screen.dart';
+//import 'map_screen.dart';
 
 class RootScreen extends StatefulWidget {
   const RootScreen({super.key});
@@ -14,7 +14,7 @@ class _RootScreenState extends State<RootScreen> {
   int _selectedIndex = 0;
   final List<Widget> _widgets = <Widget>[
     HomeScreen(),
-    MapScreen(),
+//    MapScreen(),
   ];
 
   void _onItemTapped(int index){
