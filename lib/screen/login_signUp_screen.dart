@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:final_prj/screen/home_screen.dart';
+import 'package:final_prj/screen/root_screen.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import '../config/auth.dart';
@@ -755,7 +756,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                               //화면 전환
                               MaterialPageRoute(
                                 builder: (context) {
-                                  return HomeScreen();
+                                  return RootScreen();
                                 },
                               ),
                             );
