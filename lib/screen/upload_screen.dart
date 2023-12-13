@@ -137,7 +137,7 @@ class _UploadState extends State<UploadScreen> {
       String res = await ImageStoreMethods()
           .uploadPost(textEditingController.text, _file!,
         _authentication.currentUser!.email!
-          ,gps.longitude ,gps.latitude
+         // ,gps.longitude ,gps.latitude
       );
       if(res == 'success'){
         showSnackBar('posted', context);

@@ -47,17 +47,7 @@ class _MessagesState extends State<Messages> {
       //정렬 방식 : ascending/descending 방식(0)
         stream: FirebaseFirestore.instance
             .collection('chat')
-            .where(Filter.or(
-          Filter.and(
-            Filter('rcvUserUid', isEqualTo: rcvUserUid),
-            Filter('sendUserUid', isEqualTo: sendUserUid),
-          ),
-          Filter.and(
-            Filter('rcvUserUid', isEqualTo: sendUserUid),
-            Filter('sendUserUid', isEqualTo: rcvUserUid),
-          ),
-        ))
-         .orderBy('time', descending: true) //가장 최근에 들어온 채팅을 먼저 나열
+        .orderBy('time', descending: true) //가장 최근에 들어온 채팅을 먼저 나열
            .snapshots(),
         builder: (context,
             AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {  //최신의 snapshot을 가져오기 위함
@@ -77,7 +67,8 @@ class _MessagesState extends State<Messages> {
               DateTime dt = DateTime.fromMicrosecondsSinceEpoch(
                   time.microsecondsSinceEpoch);
               //채팅방 찾기-보낸사람과 받는 사람들로만 구성된 메세지만을 찾음
-              if(chatDocs != null)
+              if ((sendUserUid == chatDocs[index]['sendUserUid'].toString())
+                  && (rcvUserUid == chatDocs[index]['rcvUserUid'].toString()))
                 return ChatBubbles(
                   message: chatDocs[index]['text'],
                   isMe: chatDocs[index]['sendUserUid'] == sendUserUid,
@@ -86,8 +77,18 @@ class _MessagesState extends State<Messages> {
                   time: dt,
                   userUid: chatDocs[index]['sendUserUid'],
                 );
-              if(chatDocs == null)
-                return Container();
+              //상대방이 나한테 보낸 메세지 찾음
+              if ((rcvUserUid == chatDocs[index]['sendUserUid'].toString())
+                  && (sendUserUid == chatDocs[index]['rcvUserUid'].toString()))
+                return ChatBubbles(
+                  message: chatDocs[index]['text'],
+                  isMe: false,
+                  sendUserName: chatDocs[index]['rcvUserName'],
+                  rcvUserName: chatDocs[index]['sendUserName'],
+                  time: dt,
+                  userUid: rcvUserUid,
+                );
+              return Container();
              },
           );
         });

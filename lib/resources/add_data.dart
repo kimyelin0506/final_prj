@@ -27,9 +27,9 @@ class ImageStoreMethods{
     String downloadUrl = await snapshot.ref.getDownloadURL();
     return downloadUrl;
   }
-
+//,double latitude, double longitude
   //firestore에 업로드
-  Future<String> uploadPost(String description, Uint8List file,String user,double latitude, double longitude) async{
+  Future<String> uploadPost(String description, Uint8List file,String user) async{
     String res = 'some Error occured';
     try{
       String photoUrl = await imageToStorage(file);
@@ -41,8 +41,8 @@ class ImageStoreMethods{
         postUrl : photoUrl,
         user: user,
         like : 0,
-        latitude: 0,
-        longitude: 0 ,
+       // latitude: 0,
+        //longitude: 0 ,
       );
       
       _firestore.collection('uploadImgTest').doc(postId).set(post.toJson());
