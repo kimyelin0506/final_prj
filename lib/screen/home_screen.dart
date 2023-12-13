@@ -212,14 +212,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 stream: FirebaseFirestore.instance
                     .collection('uploadImgTest')
                     .orderBy('datePublished', descending: true)
-                    .snapshots(),
+                    !.snapshots(),
                 builder: (BuildContext context, AsyncSnapshot snapshot) {
                   //오류 체크
                   if (snapshot.hasError) {
                     return Center(child: Text('오류발생 ${snapshot.error}'));
                   }
                   //get data
-                  QuerySnapshot querySnapshot = snapshot.data;
+                  QuerySnapshot querySnapshot = snapshot!.data;
                   List<QueryDocumentSnapshot> documents = querySnapshot.docs;
 
                   //doc -> Maps
@@ -423,10 +423,10 @@ class _HomeScreenState extends State<HomeScreen> {
                               onPressed: () {
                                 //사진 저장
                               },
-                              child: Text('사진 저장하기'),
+                              child: Text('사진 저장'),
                             ),
                             SizedBox(
-                              width: 20,
+                              width: 14,
                             ),
                             new ElevatedButton(
                                 style: ElevatedButton.styleFrom(
@@ -437,7 +437,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 onPressed: () {
                                   Navigator.of(context).pop();
                                 },
-                                child: Text('고양이 더 구경하기')),
+                                child: Text('고양이 구경하기')),
                           ],
                         ),
                       ],
