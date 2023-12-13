@@ -222,6 +222,13 @@ class _NavBarState extends State<NavBar>{
               showLogOutCheckDialog();
             },
           ),
+          ListTile(
+            leading: Icon(Icons.exit_to_app),
+            title: Text('Social logout').tr(),
+            onTap: () {
+              FirebaseAuth.instance.signOut();
+            },
+          ),
         ],
       ),
     );
