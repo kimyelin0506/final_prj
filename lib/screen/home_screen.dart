@@ -430,7 +430,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 final result = await ImageGallerySaver.saveImage(
                                   Uint8List.fromList(response.data),
                                   quality: 100,
-                                  name:'test_save_img'
+                                  name:'save_img'
                                 );
                                 Navigator.pop(context);
                               },
