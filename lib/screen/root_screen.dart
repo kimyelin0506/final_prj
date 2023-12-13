@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import 'home_screen.dart';
@@ -25,8 +26,8 @@ class _RootScreenState extends State<RootScreen> {
 
   BottomNavigationBar renderBottomNavigation() {
     return BottomNavigationBar(items: [
-      BottomNavigationBarItem(icon: Icon(Icons.home), label: '커뮤니티'),
-      BottomNavigationBarItem(icon: Icon(Icons.map_outlined), label: '고양이 지도'),
+      BottomNavigationBarItem(icon: Icon(Icons.home), label: tr('커뮤니티')),
+      BottomNavigationBarItem(icon: Icon(Icons.map_outlined), label: tr('고양이 지도')),
     ],
       currentIndex: _selectedIndex,
       selectedItemColor: Colors.black,
