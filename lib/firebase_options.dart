@@ -49,22 +49,21 @@ class DefaultFirebaseOptions {
     }
   }
 
+
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyB_llazjIiLg0ZORoePqMWtwNbqRJm_oKI',
-    appId: '1:486965428883:android:af9b513752620a333bc366',
-    messagingSenderId: '486965428883',
-    projectId: 'smu-catsns',
-    databaseURL: 'https://smu-catsns-default-rtdb.asia-southeast1.firebasedatabase.app',
-    storageBucket: 'smu-catsns.appspot.com',
+    apiKey: 'AIzaSyBakA0Gn4nb45deP1uG684tl5pnN25t0fY',
+    appId: '1:366404239432:android:b37cceb26de42ba659587d',
+    messagingSenderId: '366404239432',
+    projectId: 'smu-catsns-92e01',
+    storageBucket: 'smu-catsns-92e01.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyA-vIqpMZHe2F4EaBFhtOyO9oGcbvZYsqo',
-    appId: '1:486965428883:ios:152e1190f205eb9d3bc366',
-    messagingSenderId: '486965428883',
-    projectId: 'smu-catsns',
-    databaseURL: 'https://smu-catsns-default-rtdb.asia-southeast1.firebasedatabase.app',
-    storageBucket: 'smu-catsns.appspot.com',
+    apiKey: 'AIzaSyAdQ43GHxTqPKIqH1kh_Jm_L-JzOwtoRX0',
+    appId: '1:366404239432:ios:06d8f8971ad9495d59587d',
+    messagingSenderId: '366404239432',
+    projectId: 'smu-catsns-92e01',
+    storageBucket: 'smu-catsns-92e01.appspot.com',
     iosBundleId: 'com.example.finalPrj2',
   );
 }
