@@ -1,12 +1,15 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dio/dio.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:final_prj/screen/chat_list_screen.dart';
 import 'package:final_prj/screen/payment_screen.dart';
 import 'package:final_prj/screen/upload_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
 import '../config/NavBar.dart';
 import '../config/palette.dart';
 
@@ -223,8 +226,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   List<QueryDocumentSnapshot> documents = querySnapshot.docs;
 
                   //doc -> Maps
-                  List<Map> items =
-                      documents.map((e) => e.data() as Map).toList();
+                  List<Map> items = documents.map((e) => e.data() as Map).toList();
 
                   //list보여주기
                   return ListView.builder(
@@ -280,6 +282,8 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
+  var dio=Dio();
 
   void showPost(String userName, String contents
       , DateTime time, String ImageUrl, int likes, String postId, bool likePost) async {
@@ -420,8 +424,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                 onPrimary: Colors.white,
                                 shadowColor: Colors.black12,
                               ),
-                              onPressed: () {
-                                //사진 저장
+                              onPressed: () async{
+                                //print(ImageUrl);
+                                var response = await Dio().get(ImageUrl,options: Options(responseType: ResponseType.bytes));
+                                final result = await ImageGallerySaver.saveImage(
+                                  Uint8List.fromList(response.data),
+                                  quality: 100,
+                                  name:'save_img'
+                                );
+                                Navigator.pop(context);
                               },
                               child: Text('사진 저장'),
                             ),

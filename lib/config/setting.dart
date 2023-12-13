@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'NavBar.dart';
+import 'account.dart';
 
 bool vibration = false;
 bool darkMode = false;
@@ -51,7 +52,6 @@ class _SettingState extends State<Setting> {
         break;
     }
     Navigator.pop(context);
-    setState(() {});// AlertDialog 닫기
   }
 
   // 언어 옵션 위젯
@@ -59,6 +59,7 @@ class _SettingState extends State<Setting> {
     return InkWell(
       onTap: () {
         _changeLanguage(type);
+        setState(() {});
       },
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -69,10 +70,9 @@ class _SettingState extends State<Setting> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: darkMode ? ThemeData.dark() : ThemeData.light(),
-      home: Scaffold(
+    return Theme(
+      data: darkMode ? ThemeData.dark() : ThemeData.light(),
+      child: Scaffold(
         appBar: AppBar(
           title: Text('test').tr(),
           centerTitle: true,
@@ -117,9 +117,10 @@ class _SettingState extends State<Setting> {
               title: Text('account').tr(),
               tiles: <SettingsTile>[
                 SettingsTile.navigation(
-                  leading: Icon(Icons.logout),
-                  title: Text('logout').tr(),
-                  onPressed: ((context) {}),
+                  leading: Icon(Icons.account_circle),
+                  title: Text('profile change').tr(),
+                  onPressed: ((context) {Navigator.push(
+                      context, MaterialPageRoute(builder: (context) => Account()));}),
                 ),
               ],
             ),
@@ -137,11 +138,6 @@ class _SettingState extends State<Setting> {
         ),
         drawer: NavBar(),
       ),
-      supportedLocales: const [
-        Locale('ko', ''),
-        Locale('en', ''),
-        Locale('ja', '')
-      ],
     );
   }
 }
