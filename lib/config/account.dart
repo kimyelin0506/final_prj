@@ -73,7 +73,6 @@ class _AccountState extends State<Account> {
     UploadTask uploadTask = ref.putData(file);
     TaskSnapshot snapshot = await uploadTask;
     String downloadUrl = await snapshot.ref.getDownloadURL();
-
     return downloadUrl;
   }
 
@@ -81,25 +80,20 @@ class _AccountState extends State<Account> {
 
   @override
   Widget build(BuildContext context) {
-    // Scaffold 위젯은 기본적인 재료 디자인 시각적 구조를 나타냄
     return Scaffold(
-      // AppBar은 화면 상단에 제목 및 선택적 작업을 표시
       appBar: AppBar(
-        title: Text('프로필 변경'), // AppBar 제목 설정
-        centerTitle: true, // 제목 가운데 정렬
-        elevation: 0.0, // AppBar 아래 그림자 없음
+        title: Text('profile change').tr(),
+        centerTitle: true,
+        elevation: 0.0,
       ),
-      drawer: NavBar(), // 드로어 (사이드 메뉴)에 NavBar 위젯 사용
+      drawer: NavBar(),
       // 화면의 본문
       body: Container(
-        // 컨테이너 내부의 콘텐츠에 대한 패딩
         padding: EdgeInsets.only(left: 15, top: 20, right: 15),
-        // GestureDetector는 텍스트 필드 외부를 탭할 때 키보드를 해제하는 기능 제공
         child: GestureDetector(
           onTap: () {
             FocusScope.of(context).unfocus(); // 키보드 해제
           },
-          // ListView는 콘텐츠가 화면을 벗어날 때 스크롤 가능하게 함
           child: ListView(
             children: [
               // 프로필 사진 섹션
@@ -230,7 +224,6 @@ class _AccountState extends State<Account> {
                           Uint8List file = await _imageFile!
                               .readAsBytes(); // PickedFile을 Uint8List로 변환
                           String imageUrl = await uploadImageToStorage(file);
-
 
                           // 이미지 URL을 Firestore에 저장
                           var userDocRef =

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'NavBar.dart';
+import 'account.dart';
 
 bool vibration = false;
 bool darkMode = false;
@@ -59,6 +60,7 @@ class _SettingState extends State<Setting> {
     return InkWell(
       onTap: () {
         _changeLanguage(type);
+
       },
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -117,9 +119,10 @@ class _SettingState extends State<Setting> {
               title: Text('account').tr(),
               tiles: <SettingsTile>[
                 SettingsTile.navigation(
-                  leading: Icon(Icons.logout),
-                  title: Text('logout').tr(),
-                  onPressed: ((context) {}),
+                  leading: Icon(Icons.account_circle),
+                  title: Text('profile change').tr(),
+                  onPressed: ((context) {Navigator.push(
+                      context, MaterialPageRoute(builder: (context) => Account()));}),
                 ),
               ],
             ),
